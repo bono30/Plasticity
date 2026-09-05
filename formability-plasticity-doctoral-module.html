@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plasticity &amp; Formability of Metallic Sheet — Doctoral Module</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14161a;
+  --panel:#1b1e23;
+  --panel2:#22262c;
+  --panel3:#282d34;
+  --border:#333941;
+  --border-soft:#2a2f36;
+  --text:#e7e9ec;
+  --text-dim:#9aa1ac;
+  --text-faint:#6b7280;
+  --copper:#c9722f;
+  --copper-soft:#a5622f;
+  --steel:#5b90b8;
+  --steel-soft:#4a7595;
+  --danger:#c05252;
+  --safe:#5a9a6f;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --serif:'IBM Plex Serif',Georgia,serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:var(--sans);line-height:1.6;font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--copper);color:#14161a;}
+a{color:var(--steel);}
+.app{display:flex;min-height:100vh;}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  width:272px;flex:none;position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--panel);border-right:1px solid var(--border);
+  padding:28px 0 40px;
+}
+.brand{padding:0 24px 20px;border-bottom:1px solid var(--border-soft);margin-bottom:8px;}
+.brand .tag{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--copper);text-transform:uppercase;}
+.brand h1{font-family:var(--serif);font-size:19px;line-height:1.3;margin:8px 0 0;font-weight:600;color:var(--text);}
+.navlist{list-style:none;margin:8px 0 0;padding:0;}
+.navlist li{border-left:2px solid transparent;}
+.navlist a{
+  display:flex;gap:12px;align-items:baseline;text-decoration:none;color:var(--text-dim);
+  padding:9px 22px;font-size:13.5px;transition:color .15s,background .15s;
+}
+.navlist a:hover{color:var(--text);background:var(--panel2);}
+.navlist li.active a{color:var(--text);}
+.navlist li.active{border-left-color:var(--copper);background:var(--panel2);}
+.navlist .num{font-family:var(--mono);font-size:11px;color:var(--text-faint);flex:none;width:18px;}
+.navlist li.active .num{color:var(--copper);}
+.nav-group-label{padding:16px 24px 4px;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);}
+
+/* ---------- Main content ---------- */
+main{flex:1;min-width:0;max-width:980px;padding:0 56px 120px;}
+section{padding-top:64px;scroll-margin-top:20px;}
+section + section{border-top:1px solid var(--border-soft);}
+.eyebrow-num{font-family:var(--mono);font-size:13px;color:var(--copper);}
+h2.sec-title{
+  font-family:var(--serif);font-weight:600;font-size:32px;letter-spacing:-.01em;
+  margin:6px 0 6px;color:var(--text);
+}
+.sec-sub{color:var(--text-dim);font-size:15.5px;max-width:640px;margin:0 0 28px;}
+h3{font-family:var(--sans);font-weight:600;font-size:19px;margin:36px 0 12px;color:var(--text);}
+h4{font-family:var(--sans);font-weight:600;font-size:15.5px;margin:22px 0 8px;color:var(--text);}
+p{max-width:720px;color:#d6d9dd;}
+ul,ol{max-width:700px;color:#d6d9dd;}
+li{margin-bottom:6px;}
+strong{color:var(--text);font-weight:600;}
+code{font-family:var(--mono);background:var(--panel3);padding:1px 5px;border-radius:3px;font-size:.9em;color:#e0c9ab;}
+
+/* ---------- Equation blocks ---------- */
+.eq-block{
+  background:var(--panel2);border:1px solid var(--border);border-radius:6px;
+  padding:18px 22px;margin:16px 0 20px;overflow-x:auto;
+}
+.eq-block .katex-display{margin:0;}
+.eq-vars{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);}
+.eq-vars dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;}
+.eq-vars dt{font-family:var(--mono);color:var(--copper);font-size:13.5px;white-space:nowrap;}
+.eq-vars dd{margin:0;color:var(--text-dim);font-size:13.5px;}
+
+/* ---------- Callouts ---------- */
+.note{border-radius:6px;padding:14px 18px;margin:16px 0;font-size:14.5px;max-width:720px;border-left:3px solid;}
+.note-lab{background:rgba(91,144,184,.08);border-color:var(--steel);}
+.note-sim{background:rgba(201,114,47,.08);border-color:var(--copper);}
+.note-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:600;}
+.note-lab .note-title{color:var(--steel);}
+.note-sim .note-title{color:var(--copper);}
+.note p{margin:0;color:#c9ccd1;}
+.note p + p{margin-top:8px;}
+
+/* ---------- Widget shell ---------- */
+.widget{
+  background:var(--panel);border:1px solid var(--border);border-radius:10px;
+  margin:22px 0 28px;overflow:hidden;
+}
+.widget-head{padding:14px 20px;border-bottom:1px solid var(--border-soft);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+.widget-head .wt{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);}
+.widget-body{display:flex;flex-wrap:wrap;gap:0;}
+.widget-canvas-wrap{flex:1 1 420px;padding:14px;min-width:280px;}
+.widget-canvas-wrap canvas{width:100%;height:auto;display:block;background:#0f1114;border-radius:6px;}
+.widget-controls{flex:1 1 260px;padding:16px 20px;border-left:1px solid var(--border-soft);background:var(--panel2);min-width:240px;}
+.ctrl{margin-bottom:16px;}
+.ctrl label{display:flex;justify-content:space-between;font-size:13px;color:var(--text-dim);margin-bottom:5px;font-family:var(--mono);}
+.ctrl label span.v{color:var(--copper);}
+.ctrl input[type=range]{width:100%;accent-color:var(--copper);}
+.chk{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13.5px;color:var(--text-dim);cursor:pointer;}
+.chk input{accent-color:var(--steel);width:15px;height:15px;}
+.chk .swatch{width:12px;height:12px;border-radius:2px;flex:none;}
+.readout{font-family:var(--mono);font-size:12.5px;color:var(--text-dim);margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);}
+.readout b{color:var(--text);}
+
+/* ---------- Table ---------- */
+.tbl-wrap{overflow-x:auto;margin:18px 0;}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.8px;}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--border-soft);}
+th{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-faint);font-weight:500;}
+tr:hover td{background:var(--panel2);}
+td{color:#d3d6da;}
+td strong{color:var(--text);}
+
+/* ---------- Test cards ---------- */
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:20px 0;}
+.test-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:16px;}
+.test-card h4{margin:2px 0 6px;color:var(--copper-soft);}
+.test-card svg{width:100%;height:110px;display:block;margin:8px 0;}
+.test-card p{font-size:13.5px;color:var(--text-dim);margin:0;}
+
+/* ---------- Hero ---------- */
+.hero{padding:72px 0 40px;border-top:none !important;}
+.hero-top{display:flex;gap:40px;flex-wrap:wrap;align-items:center;}
+.hero-text{flex:1 1 380px;}
+.hero .tag{font-family:var(--mono);font-size:12px;color:var(--copper);letter-spacing:.06em;text-transform:uppercase;}
+.hero h1{font-family:var(--serif);font-size:44px;line-height:1.12;margin:14px 0 16px;font-weight:600;letter-spacing:-.015em;}
+.hero p.lede{font-size:17px;color:var(--text-dim);max-width:520px;}
+.hero-svg{flex:1 1 320px;min-width:280px;}
+.hero-topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+.hero-topics span{font-family:var(--mono);font-size:11.5px;color:var(--text-dim);border:1px solid var(--border);padding:5px 10px;border-radius:20px;}
+
+/* ---------- Scroll-fade for grids etc ---------- */
+.footer-note{margin-top:60px;padding-top:24px;border-top:1px solid var(--border-soft);color:var(--text-faint);font-size:12.5px;font-family:var(--mono);}
+
+@media (max-width:900px){
+  .sidebar{position:fixed;left:-272px;transition:left .2s;z-index:50;box-shadow:20px 0 40px rgba(0,0,0,.4);}
+  .sidebar.open{left:0;}
+  main{padding:0 20px 100px;max-width:100%;}
+  .menu-btn{position:fixed;top:14px;left:14px;z-index:60;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 12px;font-family:var(--mono);font-size:12px;}
+  .hero h1{font-size:32px;}
+}
+@media (min-width:901px){.menu-btn{display:none;}}
+</style>
+</head>
+<body>
+<button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ Contents</button>
+<div class="app">
+
+<nav class="sidebar">
+  <div class="brand">
+    <div class="tag">Doctoral Seminar · Materials Engineering</div>
+    <h1>Plasticity &amp; Formability of Metallic Sheet</h1>
+  </div>
+  <div class="nav-group-label">Formability &amp; testing</div>
+  <ul class="navlist" id="navlist">
+    <li><a href="#s1"><span class="num">01</span>Fundamentals of formability</a></li>
+    <li><a href="#s2"><span class="num">02</span>Properties, microstructure &amp; strain path</a></li>
+    <li><a href="#s3"><span class="num">03</span>Technological forming tests</a></li>
+    <li><a href="#s4"><span class="num">04</span>Forming limit curves (FLC/FLD)</a></li>
+  </ul>
+  <div class="nav-group-label">Plasticity theory</div>
+  <ul class="navlist">
+    <li><a href="#s5"><span class="num">05</span>Equivalent stress &amp; strain, yield surfaces</a></li>
+    <li><a href="#s6"><span class="num">06</span>Isotropic criteria: Tresca &amp; von Mises</a></li>
+    <li><a href="#s7"><span class="num">07</span>Anisotropy: Hill'48 &amp; Barlat family</a></li>
+  </ul>
+  <div class="nav-group-label">Hardening</div>
+  <ul class="navlist">
+    <li><a href="#s8"><span class="num">08</span>Hollomon, Ludwik, Swift, Voce</a></li>
+    <li><a href="#s9"><span class="num">09</span>Isotropic, kinematic &amp; combined</a></li>
+    <li><a href="#s10"><span class="num">10</span>Bauschinger &amp; Yoshida–Uemori</a></li>
+  </ul>
+  <div class="nav-group-label">Simulation practice</div>
+  <ul class="navlist">
+    <li><a href="#s11"><span class="num">11</span>Plasticity in FE simulation</a></li>
+    <li><a href="#s12"><span class="num">12</span>Practical implementation workflow</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section class="hero" id="top">
+  <div class="hero-top">
+    <div class="hero-text">
+      <div class="tag">Graduate module · sheet metal forming mechanics</div>
+      <h1>Why some sheets stretch into a fender, and others tear.</h1>
+      <p class="lede">A working reference on the mechanics that separate a good stamping from a split one: the tests that measure formability, the plasticity theory that predicts it, and the hardening models that feed it into simulation.</p>
+      <div class="hero-topics">
+        <span>Hill '48</span><span>Barlat YLD</span><span>Swift / Voce</span><span>Yoshida–Uemori</span><span>FLC / FLD</span><span>Nakajima · Marciniak</span>
+      </div>
+    </div>
+    <div class="hero-svg" id="heroSvgWrap"></div>
+  </div>
+</section>
+
+<section id="s1">
+  <div class="eyebrow-num">01 / 12</div>
+  <h2 class="sec-title">Fundamentals and definitions of formability</h2>
+  <p class="sec-sub">What "formability" actually means, and why it can never be reduced to a single material property.</p>
+
+  <p><strong>Formability</strong> is the capacity of a metallic sheet to change shape by plastic deformation without failing — by localized necking, fracture, wrinkling, or springback outside tolerance — under the stress state, strain path, and boundary conditions imposed by a specific forming operation. It is a <em>system property</em>, not a material constant: the same coil of steel can be highly formable in a deep-drawn cup and marginal in a stretch-formed panel, because the two operations impose different stress states on the sheet.</p>
+
+  <h3>The three families of sheet forming</h3>
+  <div class="test-grid">
+    <div class="test-card">
+      <h4>Stretching</h4>
+      <svg viewBox="0 0 200 110"><rect x="10" y="70" width="180" height="10" fill="#3a4048"/><rect x="10" y="20" width="18" height="60" fill="#3a4048"/><rect x="172" y="20" width="18" height="60" fill="#3a4048"/><path d="M40 70 Q100 20 160 70" stroke="#c9722f" stroke-width="4" fill="none"/><circle cx="100" cy="38" r="4" fill="#e7e9ec"/></svg>
+      <p>Sheet clamped at the edges (blank-holder locked); a punch stretches it biaxially. Thickness thins everywhere; limited by localized necking. Governs fender panels, Erichsen/Nakajima tests.</p>
+    </div>
+    <div class="test-card">
+      <h4>Drawing</h4>
+      <svg viewBox="0 0 200 110"><rect x="10" y="10" width="180" height="14" fill="#3a4048"/><path d="M40 24 L40 90 L160 90 L160 24" stroke="#5b90b8" stroke-width="4" fill="none"/><path d="M75 24 L75 60" stroke="#c9722f" stroke-width="4"/><rect x="60" y="0" width="30" height="24" fill="#3a4048"/></svg>
+      <p>Flange material flows radially inward into a die cavity under punch load; deformation is dominated by in-plane compression/tension, not thinning. Limited by wall fracture or flange wrinkling. Governs cups, Swift test.</p>
+    </div>
+    <div class="test-card">
+      <h4>Bending</h4>
+      <svg viewBox="0 0 200 110"><path d="M20 90 Q100 20 180 90" stroke="#5a9a6f" stroke-width="10" fill="none" stroke-linecap="round"/></svg>
+      <p>Through-thickness strain gradient: tension outside the neutral axis, compression inside. Limited by outer-fiber fracture or springback. Governs flanges, hems, roll forming.</p>
+    </div>
+  </div>
+
+  <p>Real stamped parts combine all three in different regions of the same panel — which is exactly why a single index number (like an Erichsen value) can never fully rank formability across applications, and why the discipline needs both <strong>mechanistic plasticity models</strong> (Sections 5–10) and <strong>process-representative tests</strong> (Sections 3–4).</p>
+
+  <h3>What limits formability</h3>
+  <ul>
+    <li><strong>Diffuse necking</strong> — a long-wavelength thinning band that begins once the material's strain-hardening rate can no longer compensate for the loss of load-carrying cross-section (loss of the Considère condition). This is a geometric instability, not a fracture criterion.</li>
+    <li><strong>Localized necking</strong> — a narrow, near through-thickness shear band that follows diffuse necking under plane-strain and stretching states; this is what the FLC actually marks (Section 4).</li>
+    <li><strong>Ductile fracture</strong> — void nucleation, growth and coalescence at inclusions/second-phase particles, which can occur before or after necking depending on stress triaxiality and the strain path.</li>
+    <li><strong>Wrinkling</strong> — a compressive plastic buckling instability in regions of low through-thickness/lateral support (flanges, unsupported panel areas).</li>
+    <li><strong>Springback</strong> — elastic recovery after tool release; not a "failure" in the necking sense, but a formability limit for dimensional tolerance, and the reason Section 10's kinematic hardening models exist.</li>
+  </ul>
+
+  <div class="note note-lab">
+    <div class="note-title">Measured in the lab</div>
+    <p>Local necking onset is measured via <strong>digital image correlation (DIC)</strong> on a speckled or electro-etched grid: full-field major/minor strain maps are computed from image pairs, and the strain history of the critical element is tracked up to the frame before the strain-rate in that element diverges from its neighbors — this divergence is the operational definition of "onset of localized necking" used to build FLCs (ISO 12004-2, Section 4).</p>
+  </div>
+</section>
+
+<section id="s2">
+  <div class="eyebrow-num">02 / 12</div>
+  <h2 class="sec-title">Relationships between properties, microstructure, and forming capacity</h2>
+  <p class="sec-sub">Formability is a function of five coupled variables. Change one and the forming window moves.</p>
+
+  <p>Five factors jointly set the plastic forming capacity of a sheet, and none of them can be tuned in isolation — an alloying or texture change made to raise strength almost always moves at least one of the other four.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Factor</th><th>What it controls</th><th>Typical lever</th></tr>
+    <tr><td><strong>Mechanical properties</strong></td><td>Strain-hardening exponent <em>n</em>, strength coefficient <em>K</em>, yield-to-tensile ratio, total elongation — set the height and shape of the flow curve and hence resistance to diffuse necking.</td><td>Alloy design, grain size (Hall–Petch), precipitation state, dual-phase / TRIP microstructures.</td></tr>
+    <tr><td><strong>Microstructure</strong></td><td>Phase fractions and morphology, grain size and distribution, inclusion/second-phase population, crystallographic texture.</td><td>Thermomechanical processing route, annealing schedule, alloy chemistry.</td></tr>
+    <tr><td><strong>Anisotropy</strong></td><td>Directionality of yielding and flow (Lankford coefficients <em>r</em><sub>0</sub>, <em>r</em><sub>45</sub>, <em>r</em><sub>90</sub>); normal anisotropy <em>r̄</em> raises drawability, planar anisotropy Δ<em>r</em> drives earing.</td><td>Rolling + annealing texture (crystallographic), grain shape (mechanical) anisotropy.</td></tr>
+    <tr><td><strong>Stress state</strong></td><td>Triaxiality and Lode parameter at the critical element — biaxial stretch vs. plane strain vs. uniaxial vs. shear — directly shift the necking/fracture limit.</td><td>Tool/die geometry, blank-holder force, friction, part geometry.</td></tr>
+    <tr><td><strong>Strain path</strong></td><td>Whether deformation proceeds proportionally or changes direction mid-process (e.g., pre-strain in drawing followed by stretch in a second stage) — non-proportional paths can raise or lower the effective forming limit relative to a proportional FLC (path-dependence, see Section 4).</td><td>Process sequence design, multi-stage tooling, intermediate annealing.</td></tr>
+  </table>
+  </div>
+
+  <h3>Strain hardening and formability</h3>
+  <p>The strain-hardening exponent <em>n</em> (Section 8) is the single mechanical parameter most correlated with stretch formability, because it governs how long uniform (diffuse) straining can continue before necking under the Considère criterion:</p>
+  <div class="eq-block">
+    $$\frac{d\sigma}{d\varepsilon} = \sigma \quad\Rightarrow\quad \varepsilon_{u} = n \ \text{(for a Hollomon solid under uniaxial tension)}$$
+    <div class="eq-vars"><dl>
+      <dt>ε<sub>u</sub></dt><dd>true strain at maximum load (onset of diffuse necking, uniaxial tension)</dd>
+      <dt>n</dt><dd>strain-hardening exponent from a Hollomon fit σ = Kε<sup>n</sup></dd>
+    </dl></div>
+  </div>
+  <p>A higher <em>n</em> spreads strain more uniformly before instability, which is why stretch-critical panels favor high-<em>n</em> grades (e.g., interstitial-free or TRIP steels), while deep-drawn parts favor a high normal anisotropy <em>r̄</em> instead — the two requirements do not always point to the same microstructure.</p>
+
+  <div class="note note-lab">
+    <div class="note-title">Measured in the lab</div>
+    <p>Lankford coefficients are obtained from uniaxial tensile specimens cut at 0°, 45°, and 90° to the rolling direction: <em>r</em> = ε<sub>w</sub>/ε<sub>t</sub>, the ratio of true width strain to true thickness strain, measured between roughly 10% and 15–20% elongation (before necking corrupts the width/thickness measurement). Thickness strain is usually back-calculated from volume constancy (ε<sub>t</sub> = −ε<sub>l</sub> − ε<sub>w</sub>) rather than measured directly, since sheet thickness gauges are far less precise than width extensometry.</p>
+  </div>
+</section>
+
+<section id="s3">
+  <div class="eyebrow-num">03 / 12</div>
+  <h2 class="sec-title">Technological sheet metal formability tests</h2>
+  <p class="sec-sub">Five standardized tests, five different strain paths — none of them equivalent, all of them necessary.</p>
+
+  <p>"Technological" tests deliberately reproduce a forming stress state rather than the pure uniaxial state of a tensile test. Each imposes a different strain path, so each ranks alloys differently — a sheet can top the Erichsen ranking and sit mid-pack on the Swift ranking.</p>
+
+  <div class="test-grid">
+    <div class="test-card">
+      <h4>Erichsen / Olsen</h4>
+      <svg viewBox="0 0 200 110"><rect x="30" y="20" width="140" height="14" fill="#3a4048"/><rect x="30" y="76" width="140" height="14" fill="#3a4048"/><circle cx="100" cy="34" r="14" fill="#5b90b8"/><path d="M60 76 Q100 40 140 76" stroke="#c9722f" stroke-width="4" fill="none"/></svg>
+      <p>Hemispherical punch (Ø20 mm) drives into a fully clamped blank until through-crack. Reports the <strong>Erichsen Index (IE)</strong>, the punch depth (mm) at fracture — pure biaxial stretch, near-frictionless, ISO 20482.</p>
+    </div>
+    <div class="test-card">
+      <h4>Swift cup</h4>
+      <svg viewBox="0 0 200 110"><rect x="10" y="10" width="180" height="12" fill="#3a4048"/><path d="M55 22 L55 92 L145 92 L145 22" stroke="#5b90b8" stroke-width="4" fill="none"/><rect x="80" y="0" width="40" height="22" fill="#3a4048"/></svg>
+      <p>Flat-bottom cylindrical punch draws a circular blank into a die. Blank diameter is increased until the cup wall fractures; reports the <strong>Limiting Drawing Ratio, LDR = D<sub>max</sub>/d<sub>punch</sub></strong> — dominated by radial drawing, not stretching.</p>
+    </div>
+    <div class="test-card">
+      <h4>Fukui conical cup</h4>
+      <svg viewBox="0 0 200 110"><rect x="10" y="10" width="180" height="12" fill="#3a4048"/><path d="M70 22 L55 92 L145 92 L130 22" stroke="#5b90b8" stroke-width="4" fill="none"/><polygon points="80,0 120,0 100,22" fill="#3a4048"/></svg>
+      <p>A conical punch forms a blank with no blank-holder; combines drawing and stretching. Reports the conical cup value; less common today but historically used to separate drawability from stretchability in one setup.</p>
+    </div>
+    <div class="test-card">
+      <h4>Nakajima</h4>
+      <svg viewBox="0 0 200 110"><rect x="20" y="16" width="60" height="78" fill="#282d34"/><rect x="120" y="16" width="60" height="78" fill="#282d34"/><circle cx="100" cy="30" r="13" fill="#5b90b8"/><path d="M60 92 Q100 42 140 92" stroke="#c9722f" stroke-width="4" fill="none"/></svg>
+      <p>Hemispherical punch over specimens of varying width — from a full circle (equibiaxial) to a narrow strip (near-uniaxial), passing through plane strain. Generates the family of strain paths used to trace the <strong>FLC</strong> (ISO 12004-2).</p>
+    </div>
+    <div class="test-card">
+      <h4>Marciniak</h4>
+      <svg viewBox="0 0 200 110"><rect x="10" y="10" width="180" height="12" fill="#3a4048"/><rect x="60" y="22" width="80" height="8" fill="#5a9a6f"/><path d="M60 30 L60 92 L140 92 L140 30" stroke="#5b90b8" stroke-width="4" fill="none"/><rect x="82" y="0" width="36" height="22" fill="#3a4048"/></svg>
+      <p>A flat-bottom punch deforms the test blank <em>through a perforated carrier sheet</em>, which removes punch friction and bending from the gauge region beneath the punch — giving a more rigorous, geometry-independent plane-strain-to-biaxial branch of the FLC than Nakajima.</p>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Test</th><th>Dominant stress state</th><th>Primary output</th><th>Best used to rank</th></tr>
+    <tr><td>Erichsen/Olsen</td><td>Equibiaxial stretch</td><td>IE (mm)</td><td>Stretchability, simple QC index</td></tr>
+    <tr><td>Swift cup</td><td>Radial drawing / uniaxial-ish wall</td><td>LDR</td><td>Deep-drawability</td></tr>
+    <tr><td>Fukui</td><td>Mixed draw + stretch</td><td>Conical cup value</td><td>Combined drawing/stretching</td></tr>
+    <tr><td>Nakajima</td><td>Uniaxial → plane strain → biaxial</td><td>ε<sub>1</sub>, ε<sub>2</sub> at necking</td><td>Full FLC, but friction/bending bias near the pole</td></tr>
+    <tr><td>Marciniak</td><td>Plane strain → biaxial (carrier removes friction)</td><td>ε<sub>1</sub>, ε<sub>2</sub> at necking</td><td>Reference-quality FLC on the stretch side</td></tr>
+  </table>
+  </div>
+
+  <div class="note note-sim">
+    <div class="note-title">Used in simulation</div>
+    <p>None of these five tests is normally reproduced directly inside a stamping FE model. Instead, their outputs calibrate or validate the model: Nakajima/Marciniak strain pairs build the FLC used as a <em>post-processing</em> forming-severity criterion overlaid on simulated strain states (Section 4), while Erichsen/Swift results are typically used only as go/no-go acceptance checks against simulation-predicted thinning and drawability margins.</p>
+  </div>
+</section>
+
+<section id="s4">
+  <div class="eyebrow-num">04 / 12</div>
+  <h2 class="sec-title">Forming limit curves and diagrams (FLC/FLD)</h2>
+  <p class="sec-sub">The single most-used formability criterion in industry — and one of the most misused, because it is path-dependent.</p>
+
+  <p>The <strong>Forming Limit Diagram (FLD)</strong> plots major true surface strain ε<sub>1</sub> (vertical) against minor true surface strain ε<sub>2</sub> (horizontal) measured at the onset of localized necking, for specimens deformed along many different strain paths (produced by the Nakajima/Marciniak specimen family, Section 3). The curve connecting these limit points is the <strong>Forming Limit Curve (FLC)</strong>: strain states below it are considered formable, at or above it are at risk of splitting.</p>
+
+  <h3>Determining the FLC (ISO 12004-2)</h3>
+  <ol>
+    <li>Deform a set of specimens of graded width (equibiaxial → uniaxial) until fracture, recording full-field strain history by DIC.</li>
+    <li>For each specimen, identify the section through the crack/neck and extract the strain-versus-time (or strain-versus-position) profile in the last frames before fracture.</li>
+    <li>Apply the <strong>ISO cross-section / time-dependent method</strong>: fit strain-rate profiles on either side of the forming neck's inflection points and extrapolate back to the frame where the neck's strain-rate first diverges from its neighbors — this frame's (ε<sub>1</sub>,ε<sub>2</sub>) pair is the limit strain, deliberately excluding the post-necking frames where strain is no longer representative of the sheet at large.</li>
+    <li>Repeat across the specimen set and fit a curve (often a second-order polynomial or piecewise-linear form) through the resulting limit points.</li>
+  </ol>
+
+  <div class="note note-lab">
+    <div class="note-title">Measured in the lab</div>
+    <p>A useful, purely empirical estimate of the plane-strain intercept FLC<sub>0</sub> for low-carbon steels (Keeler–Brazier):</p>
+  </div>
+  <div class="eq-block">
+    $$FLC_0=\left(23.3+14.13\,t\right)\frac{n}{0.21}\quad[\%]$$
+    <div class="eq-vars"><dl>
+      <dt>FLC<sub>0</sub></dt><dd>major engineering strain limit at plane strain (ε<sub>2</sub>=0), in %</dd>
+      <dt>t</dt><dd>sheet thickness, mm</dd>
+      <dt>n</dt><dd>strain-hardening exponent (Section 8)</dd>
+    </dl></div>
+  </div>
+
+  <div class="widget">
+    <div class="widget-head"><strong>Interactive · Forming Limit Diagram</strong><span class="wt">Keeler-type FLC + strain-path guides</span></div>
+    <div class="widget-body">
+      <div class="widget-canvas-wrap"><canvas id="fldCanvas" width="640" height="440"></canvas></div>
+      <div class="widget-controls">
+        <div class="ctrl"><label>Sheet thickness t <span class="v" id="fld_t_v">1.0 mm</span></label><input type="range" id="fld_t" min="0.5" max="3" step="0.1" value="1.0"></div>
+        <div class="ctrl"><label>Hardening exponent n <span class="v" id="fld_n_v">0.20</span></label><input type="range" id="fld_n" min="0.05" max="0.35" step="0.01" value="0.20"></div>
+        <div class="ctrl"><label>Right-branch slope k <span class="v" id="fld_k_v">0.65</span></label><input type="range" id="fld_k" min="0.3" max="1.0" step="0.05" value="0.65"></div>
+        <p style="font-size:12.5px;color:var(--text-dim);margin:14px 0 8px;">Click the plot to place a trial strain state and check it against the curve.</p>
+        <div class="readout" id="fld_readout">Click on the diagram to test a strain state.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Interpretation and the path-dependence caveat</h3>
+  <p>The left branch (ε<sub>2</sub>&lt;0, drawing side) has an approximate slope of −1, reflecting near-constant thickness strain regardless of the ε<sub>1</sub>/ε<sub>2</sub> ratio; the right branch (ε<sub>2</sub>&gt;0, stretching side) rises less steeply because equibiaxial stretching adds thinning contributions from two in-plane directions at once. The minimum, at ε<sub>2</sub>≈0 (plane strain), is the most restrictive point on the curve — which is exactly why so much die-design effort goes into avoiding plane-strain states over sharp radii and character lines.</p>
+  <p>The classical FLC assumes a <strong>proportional (linear) strain path</strong> from the undeformed state. Real stampings often load non-proportionally — e.g., a pre-draw stage followed by a stretch stage — and the same final (ε<sub>1</sub>,ε<sub>2</sub>) point can be safe or unsafe depending on the path taken to reach it. This is the main motivation for the <strong>Forming Limit Stress Diagram (FLSD)</strong>: converting the strain-based limit to principal-stress space using the flow curve and yield function makes the limit far less path-sensitive, at the cost of needing an accurate hardening + yield model (Sections 6–9) to do the conversion.</p>
+
+  <div class="note note-sim">
+    <div class="note-title">Used in simulation</div>
+    <p>In FE post-processing, every integration point's simulated (ε<sub>1</sub>,ε<sub>2</sub>) trajectory is overlaid on the FLC, usually with a safety margin band (e.g., 10% below the curve = marginal). Because the FLC is path-dependent, codes that see strongly non-proportional loading increasingly report results against an FLSD-derived criterion or a ductile-fracture criterion (Section 11) instead of the strain-based FLC alone.</p>
+  </div>
+</section>
+
+<section id="s5">
+  <div class="eyebrow-num">05 / 12</div>
+  <h2 class="sec-title">Fundamentals of plasticity applied to metal forming</h2>
+  <p class="sec-sub">Reducing a general 3-D stress state to a single scalar the material "feels" — and the flow rule that turns it back into a strain increment.</p>
+
+  <p>Metal forming stresses are almost never uniaxial. Plasticity theory needs a scalar measure that lets a multiaxial stress state be compared against the single-axis flow curve measured in a tensile test. That scalar is the <strong>equivalent (von Mises, unless stated) stress</strong>, and its work-conjugate is the <strong>equivalent plastic strain</strong>.</p>
+
+  <div class="eq-block">
+    $$\bar\sigma=\sqrt{\tfrac{1}{2}\left[(\sigma_1-\sigma_2)^2+(\sigma_2-\sigma_3)^2+(\sigma_3-\sigma_1)^2\right]}\qquad
+    d\bar\varepsilon^{p}=\sqrt{\tfrac{2}{3}\,d\varepsilon^{p}_{ij}\,d\varepsilon^{p}_{ij}}$$
+    <div class="eq-vars"><dl>
+      <dt>σ<sub>1,2,3</sub></dt><dd>principal stresses</dd>
+      <dt>σ̄</dt><dd>equivalent (von Mises) stress — compared directly against the flow curve σ̄=σ<sub>Y</sub>(ε̄<sup>p</sup>)</dd>
+      <dt>dε̄<sup>p</sup></dt><dd>equivalent plastic strain increment, integrated over the loading history to give ε̄<sup>p</sup></dd>
+    </dl></div>
+  </div>
+
+  <h3>Yield function, yield surface, and the flow rule</h3>
+  <p>A <strong>yield function</strong> f(σ<sub>ij</sub>,ε̄<sup>p</sup>) = σ̄(σ<sub>ij</sub>) − σ<sub>Y</sub>(ε̄<sup>p</sup>) defines a closed surface in stress space, the <strong>yield surface</strong>: f&lt;0 is elastic, f=0 is yielding, f&gt;0 is inadmissible. Plastic strain increments are assumed to follow the <strong>normality (associated flow) rule</strong> — they point along the outward normal to the yield surface at the current stress point:</p>
+  <div class="eq-block">
+    $$d\varepsilon^{p}_{ij}=d\lambda\,\frac{\partial f}{\partial \sigma_{ij}}$$
+    <div class="eq-vars"><dl>
+      <dt>dλ</dt><dd>plastic multiplier (≥0), fixed by the consistency condition df=0 during plastic loading</dd>
+      <dt>∂f/∂σ<sub>ij</sub></dt><dd>gradient of the yield function — the flow direction; this is why the <em>shape</em> of the yield surface (Sections 6–7), not just its size, controls how strain partitions between directions</dd>
+    </dl></div>
+  </div>
+
+  <div class="note note-sim">
+    <div class="note-title">Used in simulation</div>
+    <p>Every explicit or implicit FE step that returns a trial elastic stress outside the yield surface performs a <strong>return-mapping</strong> (radial return, for von Mises with isotropic hardening) to project it back onto the updated surface, consuming Δε̄<sup>p</sup> in the process. The choice of yield function in Sections 6–7 changes the direction of that projection, which is why swapping von Mises for Hill'48 in a material card changes predicted thinning distributions even when the flow curve is identical.</p>
+  </div>
+</section>
+
+<section id="s6">
+  <div class="eyebrow-num">06 / 12</div>
+  <h2 class="sec-title">Isotropic yield criteria: Tresca and von Mises</h2>
+  <p class="sec-sub">The two textbook criteria — and why real sheet almost never obeys either one exactly.</p>
+
+  <div class="eq-block">
+    $$\text{Tresca:}\quad \bar\sigma_T=\max\big(|\sigma_1-\sigma_2|,\,|\sigma_2-\sigma_3|,\,|\sigma_3-\sigma_1|\big)$$
+    $$\text{von Mises:}\quad \bar\sigma_{vM}=\sqrt{\tfrac{1}{2}\left[(\sigma_1-\sigma_2)^2+(\sigma_2-\sigma_3)^2+(\sigma_3-\sigma_1)^2\right]}$$
+  </div>
+  <p>Tresca assumes yielding is controlled purely by the <strong>maximum shear stress</strong>; von Mises assumes it is controlled by the <strong>distortional (shape-change) elastic strain energy</strong>, equivalently the octahedral shear stress. In plane stress, Tresca's locus is a hexagon inscribed inside the von Mises ellipse, coinciding at uniaxial and equibiaxial points and diverging most (≈15%) at pure shear.</p>
+
+  <div class="widget">
+    <div class="widget-head"><strong>Interactive · Isotropic yield loci</strong><span class="wt">Plane stress, σ₁–σ₂ plane, normalized by σ<sub>Y</sub></span></div>
+    <div class="widget-body">
+      <div class="widget-canvas-wrap"><canvas id="isoCanvas" width="480" height="480"></canvas></div>
+      <div class="widget-controls">
+        <label class="chk"><input type="checkbox" id="show_vm" checked><span class="swatch" style="background:#5b90b8"></span>von Mises</label>
+        <label class="chk"><input type="checkbox" id="show_tr" checked><span class="swatch" style="background:#c9722f"></span>Tresca</label>
+        <p style="font-size:12.5px;color:var(--text-dim);margin-top:14px;">Both loci pass through the same uniaxial (1,0), (0,1) and equibiaxial (1,1) points — the criteria only disagree about the path connecting them, which is exactly the shear and near-plane-strain region most relevant to bending and flanging.</p>
+        <div class="readout">Max discrepancy: <b>≈15.5%</b><br>at pure shear (σ₁=−σ₂)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note note-sim">
+    <div class="note-title">Used in simulation</div>
+    <p>Von Mises is the default isotropic option in essentially every commercial FE code because its flow rule is smooth everywhere (no corners), giving a unique, well-conditioned return-mapping direction; Tresca's hexagonal corners require special corner-return logic and are rarely used for sheet forming in practice, mainly retained for pressure-vessel/structural codes with conservative design margins.</p>
+  </div>
+</section>
+
+<section id="s7">
+  <div class="eyebrow-num">07 / 12</div>
+  <h2 class="sec-title">Anisotropic plasticity: Hill '48 and the Barlat family</h2>
+  <p class="sec-sub">Rolled sheet is not isotropic. Its yield surface must encode that, or predicted strain distributions and earing profiles will be wrong.</p>
+
+  <h3>Hill's 1948 quadratic criterion</h3>
+  <p>Hill's model generalizes von Mises with six anisotropy coefficients (F,G,H,L,M,N) referred to the material's orthotropic axes (rolling, transverse, normal). For a sheet loaded with principal stresses aligned to the rolling/transverse directions (no in-plane shear), it reduces to a function of the Lankford coefficients measured at 0°, 45°, and 90° to rolling:</p>
+  <div class="eq-block">
+    $$G\,\sigma_1^{2}+F\,\sigma_2^{2}+H(\sigma_1-\sigma_2)^{2}=\bar\sigma_0^{2}\,,\qquad
+    G=\frac{1}{1+r_0},\quad H=\frac{r_0}{1+r_0},\quad F=\frac{r_0}{r_{90}(1+r_0)}$$
+    <div class="eq-vars"><dl>
+      <dt>σ<sub>1</sub>, σ<sub>2</sub></dt><dd>in-plane principal stresses along rolling and transverse directions</dd>
+      <dt>r<sub>0</sub>, r<sub>45</sub>, r<sub>90</sub></dt><dd>Lankford coefficients at 0°, 45°, 90° to rolling (r<sub>45</sub> enters the shear coefficient N, not shown here since no shear stress is present in this reduced principal form)</dd>
+      <dt>σ̄<sub>0</sub></dt><dd>reference (rolling-direction) uniaxial yield stress</dd>
+    </dl></div>
+  </div>
+  <p>Hill'48 is cheap to calibrate (three tensile tests give r<sub>0</sub>, r<sub>45</sub>, r<sub>90</sub>) and remains the default anisotropic option in most commercial codes, but it is known to give qualitatively wrong yield-locus curvature for many aluminum alloys and some high-strength steels, particularly under-predicting the balanced-biaxial yield stress.</p>
+
+  <h3>The Barlat family (YLD89, YLD91, YLD2000-2d, YLD2004-18p)</h3>
+  <p>Barlat's criteria replace Hill's quadratic form with a higher-order, non-quadratic function of <strong>linearly transformed stresses</strong> — the Cauchy stress tensor is first passed through one or two fourth-order linear transformation tensors (whose components are the anisotropy coefficients) before being combined in a Hosford-type exponent form. This decouples "shape flexibility" (via the exponent <em>m</em>) from "directionality" (via the transformation coefficients), letting the same family fit both the yield-stress and r-value directionality far more accurately than Hill'48 — at the cost of needing more tests to calibrate (typically 0/45/90° tensile yield stresses and r-values, plus a balanced-biaxial test) and non-linear fitting.</p>
+  <div class="eq-block">
+    $$\text{Isotropic exponent form (Hosford), the conceptual seed of the Barlat family:}$$
+    $$|\sigma_1|^{m}+|\sigma_2|^{m}+|\sigma_1-\sigma_2|^{m}=2\bar\sigma_0^{m}$$
+    <div class="eq-vars"><dl>
+      <dt>m</dt><dd>exponent; m=2 recovers von Mises exactly, m→∞ recovers Tresca; m≈6 fits BCC metals (steels), m≈8 fits FCC metals (aluminum) best (Logan &amp; Hosford)</dd>
+    </dl></div>
+  </div>
+  <p>Barlat's YLD2000-2d applies this exponent form to two linearly transformed stress tensors instead of the raw principal stresses, each transformation carrying its own set of anisotropy coefficients (α<sub>1</sub>…α<sub>8</sub>) fitted to the measured directional yield stresses and r-values — the widget below uses the untransformed Hosford exponent form as a stand-in to show what the exponent alone does to locus shape; production Barlat calibration additionally warps the locus directionally, which a 1-parameter demo cannot show.</p>
+
+  <div class="widget">
+    <div class="widget-head"><strong>Interactive · Anisotropic yield loci</strong><span class="wt">Hill '48 (r₀,r₉₀) and Hosford/Barlat-family exponent (m)</span></div>
+    <div class="widget-body">
+      <div class="widget-canvas-wrap"><canvas id="anisoCanvas" width="480" height="480"></canvas></div>
+      <div class="widget-controls">
+        <label class="chk"><input type="checkbox" id="a_show_vm" checked><span class="swatch" style="background:#6b7280"></span>von Mises (reference)</label>
+        <label class="chk"><input type="checkbox" id="a_show_hill" checked><span class="swatch" style="background:#5b90b8"></span>Hill '48</label>
+        <label class="chk"><input type="checkbox" id="a_show_hos" checked><span class="swatch" style="background:#c9722f"></span>Hosford / Barlat-family</label>
+        <div class="ctrl"><label>r₀ <span class="v" id="a_r0_v">1.0</span></label><input type="range" id="a_r0" min="0.4" max="2.5" step="0.05" value="1.0"></div>
+        <div class="ctrl"><label>r₉₀ <span class="v" id="a_r90_v">1.0</span></label><input type="range" id="a_r90" min="0.4" max="2.5" step="0.05" value="1.0"></div>
+        <div class="ctrl"><label>Exponent m <span class="v" id="a_m_v">8</span></label><input type="range" id="a_m" min="2" max="14" step="1" value="8"></div>
+        <div class="readout" id="aniso_readout"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note note-lab">
+    <div class="note-title">Measured in the lab</div>
+    <p>A full Barlat YLD2000-2d calibration typically needs: uniaxial yield stress and r-value at 0°, 45°, 90° to rolling (six numbers, from three tensile tests with extensometry in two directions each), plus the balanced-biaxial yield stress and biaxial r-value from a hydraulic bulge test or a cruciform biaxial rig. Hill'48 needs only the three r-values (yield stresses are often assumed isotropic to first order).</p>
+  </div>
+  <div class="note note-sim">
+    <div class="note-title">Used in simulation</div>
+    <p>The yield function is entered in the FE material card as a coefficient set (Hill'48: F,G,H,N or equivalently r-values; Barlat: α<sub>1</sub>…α<sub>8</sub> and m), and every integration point evaluates it once per iteration to get both σ̄ (for the hardening comparison) and ∂f/∂σ (for the flow direction) — so an error in these coefficients biases <em>both</em> the predicted force/thinning level and the predicted strain-path direction, which then feeds directly into the FLC check of Section 4.</p>
+  </div>
+</section>
+
+<section id="s8">
+  <div class="eyebrow-num">08 / 12</div>
+  <h2 class="sec-title">Strain hardening modeling: Hollomon, Ludwik, Swift, Voce</h2>
+  <p class="sec-sub">Four curve shapes, four different assumptions about how far hardening can run — and very different extrapolation risk past the necking strain.</p>
+
+  <div class="eq-block">
+    $$\text{Hollomon:}\ \sigma=K\varepsilon^{n}\qquad
+    \text{Ludwik:}\ \sigma=\sigma_0+K\varepsilon^{n}\qquad
+    \text{Swift:}\ \sigma=K(\varepsilon_0+\varepsilon)^{n}\qquad
+    \text{Voce:}\ \sigma=\sigma_0+Q\!\left(1-e^{-b\varepsilon}\right)$$
+    <div class="eq-vars"><dl>
+      <dt>σ, ε</dt><dd>true (flow) stress and true plastic strain</dd>
+      <dt>K</dt><dd>strength coefficient (Hollomon/Ludwik/Swift)</dd>
+      <dt>n</dt><dd>strain-hardening exponent — Hollomon forces σ→0 as ε→0, which is unphysical at very small strain but fits well over the technologically relevant range</dd>
+      <dt>σ<sub>0</sub></dt><dd>initial/back-extrapolated yield stress (Ludwik, Voce)</dd>
+      <dt>ε<sub>0</sub></dt><dd>Swift's pre-strain offset — shifts the origin so σ≠0 at ε=0 without a separate additive term</dd>
+      <dt>Q, b</dt><dd>Voce saturation stress increment and rate — Voce is the only one of the four with a finite hardening ceiling (σ→σ<sub>0</sub>+Q as ε→∞), matching metals that saturate (many aluminum alloys, austenitic stainless) rather than power-law metals (many steels)</dd>
+    </dl></div>
+  </div>
+
+  <div class="widget">
+    <div class="widget-head"><strong>Interactive · Hardening law comparison</strong><span class="wt">σ vs. true plastic strain ε</span></div>
+    <div class="widget-body">
+      <div class="widget-canvas-wrap"><canvas id="hardCanvas" width="640" height="420"></canvas></div>
+      <div class="widget-controls">
+        <label class="chk"><input type="checkbox" id="h_show_hol" checked><span class="swatch" style="background:#5b90b8"></span>Hollomon</label>
+        <label class="chk"><input type="checkbox" id="h_show_lud" checked><span class="swatch" style="background:#5a9a6f"></span>Ludwik</label>
+        <label class="chk"><input type="checkbox" id="h_show_swi" checked><span class="swatch" style="background:#c9722f"></span>Swift</label>
+        <label class="chk"><input type="checkbox" id="h_show_voc" checked><span class="swatch" style="background:#c05252"></span>Voce</label>
+        <div class="ctrl"><label>K (MPa) <span class="v" id="h_K_v">550</span></label><input type="range" id="h_K" min="300" max="900" step="10" value="550"></div>
+        <div class="ctrl"><label>n <span class="v" id="h_n_v">0.20</span></label><input type="range" id="h_n" min="0.05" max="0.40" step="0.01" value="0.20"></div>
+        <div class="ctrl"><label>σ₀ (MPa) <span class="v" id="h_s0_v">180</span></label><input type="range" id="h_s0" min="50" max="400" step="10" value="180"></div>
+        <div class="ctrl"><label>ε₀ (Swift) <span class="v" id="h_e0_v">0.010</span></label><input type="range" id="h_e0" min="0.002" max="0.05" step="0.002" value="0.01"></div>
+        <div class="ctrl"><label>Q (Voce, MPa) <span class="v" id="h_Q_v">400</span></label><input type="range" id="h_Q" min="100" max="700" step="10" value="400"></div>
+        <div class="ctrl"><label>b (Voce) <span class="v" id="h_b_v">10</span></label><input type="range" id="h_b" min="2" max="30" step="1" value="10"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note note-lab">
+    <div class="note-title">Measured in the lab</div>
+    <p>Coefficients are fit to the true stress–true plastic strain curve from a uniaxial tensile test, valid only up to the diffuse-necking strain (Section 1) where the stress state stops being uniaxial. Beyond that strain, the flow curve must be <strong>extrapolated</strong> (the four laws above disagree increasingly as ε grows) or extended experimentally with a hydraulic bulge test, which reaches true strains 2–4× higher than tension under a near-equibiaxial stress state and is converted to an equivalent flow curve via the membrane (thin-shell) equations and a chosen yield function (Section 7).</p>
+  </div>
+  <div class="note note-sim">
+    <div class="note-title">Used in simulation</div>
+    <p>The hardening law sets σ<sub>Y</sub>(ε̄<sup>p</sup>) in the yield function f=σ̄−σ<sub>Y</sub>(ε̄<sup>p</sup>) (Section 5); because stamping simulations routinely reach local strains well beyond the tensile necking limit, the choice of extrapolation law materially changes predicted punch force and thinning in high-strain regions — a common practical compromise is a <strong>combined Swift–Voce</strong> law, blending Swift's power-law rise at low strain with Voce's saturation at high strain via a weighting parameter fit to bulge-test data.</p>
+  </div>
+</section>
+
+<section id="s9">
+  <div class="eyebrow-num">09 / 12</div>
+  <h2 class="sec-title">Isotropic, kinematic, and combined hardening</h2>
+  <p class="sec-sub">Hardening does more than one thing: it can grow the yield surface, shift it, or both — and only one of those choices predicts the Bauschinger effect.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Model</th><th>Yield surface evolution</th><th>Reverse-loading prediction</th></tr>
+    <tr><td><strong>Isotropic</strong></td><td>Surface expands uniformly about a fixed center; f = σ̄(σ) − R(ε̄<sup>p</sup>) − σ<sub>Y0</sub></td><td>Predicts reverse yield at the <em>same</em> magnitude as forward flow stress — no Bauschinger effect. Adequate for monotonic, proportional forming only.</td></tr>
+    <tr><td><strong>Kinematic</strong></td><td>Surface translates rigidly by a back-stress α, size constant; f = σ̄(σ−α) − σ<sub>Y0</sub></td><td>Predicts early reverse yielding (Bauschinger effect) but no additional hardening capacity — flow stress magnitude on reload is capped.</td></tr>
+    <tr><td><strong>Combined</strong></td><td>Both expand (R) and translate (α); f = σ̄(σ−α) − R(ε̄<sup>p</sup>) − σ<sub>Y0</sub></td><td>Captures both early re-yield <em>and</em> continued hardening — required for any process with load reversal (Section 10).</td></tr>
+  </table>
+  </div>
+
+  <div class="eq-block">
+    $$\text{Nonlinear (Armstrong–Frederick) kinematic hardening:}\qquad d\alpha = C\,d\varepsilon^{p} - \gamma\,\alpha\,d\bar\varepsilon^{p}$$
+    <div class="eq-vars"><dl>
+      <dt>α</dt><dd>back-stress tensor (1-D form shown), locates the current center of the yield surface</dd>
+      <dt>C</dt><dd>initial (linear) kinematic hardening modulus — controls the slope right after reversal</dd>
+      <dt>γ</dt><dd>dynamic-recovery coefficient — controls how quickly α saturates to α<sub>sat</sub>=C/γ, which is what makes the model nonlinear and finite-range instead of linear and unbounded (Prager's original 1955 model set γ=0)</dd>
+    </dl></div>
+  </div>
+
+  <div class="note note-sim">
+    <div class="note-title">Used in simulation</div>
+    <p>Combined hardening is the standard choice for <strong>springback</strong> prediction, because a stamped panel unloads elastically then often re-loads plastically in the opposite sense during trim, flange, or in-service loading — a pure isotropic model will over-predict the springback-driving stress gradient through the thickness by missing the reduced reverse flow stress the material actually exhibits.</p>
+  </div>
+</section>
+
+<section id="s10">
+  <div class="eyebrow-num">10 / 12</div>
+  <h2 class="sec-title">Bauschinger effect and the Yoshida–Uemori model</h2>
+  <p class="sec-sub">Why a two-surface model, not just a nonlinear back-stress, is needed to reproduce what a real cyclic sheet test shows.</p>
+
+  <p>The <strong>Bauschinger effect</strong> is the reduction in yield stress on load reversal following forward plastic straining — a direct consequence of directional dislocation structures (pile-ups, cell walls) built up during forward flow, which assist dislocation motion in the reverse direction. It is not captured by isotropic hardening at all, and only partially captured by a single nonlinear kinematic term: real sheet also shows a <strong>transient, rapidly decaying reverse hardening rate</strong> and, after several cycles, a <strong>workhardening stagnation</strong> — a near-flat region on the flow curve just after reversal — that a single Armstrong–Frederick back-stress cannot reproduce simultaneously with the correct saturation behavior.</p>
+
+  <p>The <strong>Yoshida–Uemori (Y-U) model</strong> resolves this with <em>two</em> nested surfaces: a small yield surface (radius Y) that moves inside a larger bounding surface (radius B), both translating via their own back-stresses. The bounding surface's motion carries the "true" hardening; the yield surface's relative position inside it reproduces the sharp, decaying early-reverse transient (Bauschinger) while an added <strong>workhardening-stagnation</strong> term captures the flat region — making Y-U the standard choice in commercial stamping/springback codes (e.g., as a user or built-in material model in LS-DYNA, PAM-STAMP, AutoForm) whenever multi-stage or cyclic-bending processes are being simulated.</p>
+
+  <div class="widget">
+    <div class="widget-head"><strong>Interactive · Reverse-loading hysteresis</strong><span class="wt">1-D combined isotropic (Voce) + nonlinear kinematic (Armstrong–Frederick) demonstrator</span></div>
+    <div class="widget-body">
+      <div class="widget-canvas-wrap"><canvas id="bauCanvas" width="640" height="420"></canvas></div>
+      <div class="widget-controls">
+        <div class="ctrl"><label>Kinematic modulus C (MPa) <span class="v" id="b_C_v">8000</span></label><input type="range" id="b_C" min="1000" max="20000" step="500" value="8000"></div>
+        <div class="ctrl"><label>Recovery γ <span class="v" id="b_g_v">60</span></label><input type="range" id="b_g" min="10" max="200" step="5" value="60"></div>
+        <div class="ctrl"><label>Isotropic Q (MPa) <span class="v" id="b_Q_v">150</span></label><input type="range" id="b_Q" min="0" max="400" step="10" value="150"></div>
+        <div class="ctrl"><label>Isotropic rate b <span class="v" id="b_b_v">15</span></label><input type="range" id="b_b" min="2" max="40" step="1" value="15"></div>
+        <p style="font-size:12.5px;color:var(--text-dim);margin-top:12px;">Strain path: 0 → +5% → −5% → +5% engineering plastic strain. Note the reduced, curved re-yield right after each reversal (Bauschinger effect) compared to the sharp isotropic-only case (dashed).</p>
+        <div class="readout" id="bau_readout"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note note-lab">
+    <div class="note-title">Measured in the lab</div>
+    <p>Y-U/kinematic-hardening parameters are calibrated from a <strong>tension–compression test</strong> on a sheet specimen (needing anti-buckling fixtures/guides because sheet is thin), or from a <strong>cyclic bending–unbending test</strong> — both reverse the load path at controlled strain amplitudes and record the resulting hysteresis loops, which are then fit to extract C, γ (and the Y-U-specific bounding-surface and stagnation parameters) by least-squares matching of the simulated to the measured loops.</p>
+  </div>
+</section>
+
+<section id="s11">
+  <div class="eyebrow-num">11 / 12</div>
+  <h2 class="sec-title">Applying plasticity models to numerical simulation of forming</h2>
+  <p class="sec-sub">How the pieces from Sections 5–10 actually sit inside a finite-element material subroutine.</p>
+
+  <p>A sheet-forming FE simulation (explicit dynamic, for the fast, highly nonlinear contact of stamping; implicit static, for slow processes or springback) needs, at every integration point and every time step, a way to update stress given an increment of strain. The <strong>material model (constitutive subroutine)</strong> that does this bundles exactly the four ingredients built up in this module:</p>
+  <ol>
+    <li><strong>Elastic law</strong> — usually isotropic Hooke's law, used for the trial elastic stress predictor and for unloading/springback.</li>
+    <li><strong>Yield function</strong> (Sections 6–7) — evaluated on the trial stress to test f≤0; if violated, triggers plastic correction.</li>
+    <li><strong>Hardening law</strong> (Sections 8–9) — supplies σ<sub>Y</sub>(ε̄<sup>p</sup>) (and, if kinematic, α) needed by the yield function.</li>
+    <li><strong>Flow rule</strong> (Section 5) — gives the direction of the plastic correction (return mapping) once the yield function confirms plastic loading.</li>
+  </ol>
+
+  <div class="eq-block">
+    $$\text{Return mapping (implicit, radial-return form for von Mises + isotropic hardening):}$$
+    $$\sigma_{n+1}=\sigma_{n+1}^{trial}-2G\,\Delta\bar\varepsilon^{p}\,\frac{3}{2}\frac{s_{n+1}^{trial}}{\bar\sigma^{trial}},\qquad
+    \text{solve } \bar\sigma^{trial}-3G\Delta\bar\varepsilon^{p}=\sigma_Y(\bar\varepsilon^{p}_n+\Delta\bar\varepsilon^{p})$$
+    <div class="eq-vars"><dl>
+      <dt>σ<sub>n+1</sub><sup>trial</sup></dt><dd>elastic-predictor stress, computed assuming the whole strain increment is elastic</dd>
+      <dt>G</dt><dd>elastic shear modulus</dd>
+      <dt>s<sup>trial</sup></dt><dd>deviatoric part of the trial stress</dd>
+      <dt>Δε̄<sup>p</sup></dt><dd>unknown plastic strain increment, solved by a local Newton iteration on the scalar consistency equation shown — this is the one nonlinear equation that must be solved <em>per integration point, per time step</em>, which is why efficient return-mapping algorithms matter enormously for run time on million-element stamping meshes</dd>
+    </dl></div>
+  </div>
+
+  <p>Non-quadratic (Barlat) and anisotropic (Hill) yield functions replace the simple radial-return direction with a locus-specific gradient ∂f/∂σ, generally requiring a full local Newton solve on the stress tensor rather than the scalar shortcut above; combined hardening adds α as a second evolving internal variable solved simultaneously with Δε̄<sup>p</sup>.</p>
+
+  <div class="note note-sim">
+    <div class="note-title">Used in simulation</div>
+    <p>Explicit codes (LS-DYNA, PAM-STAMP, Radioss) typically implement these as compiled material models selected by a numeric ID (e.g., LS-DYNA <code>MAT_36</code>/<code>MAT_133</code> for Barlat variants, <code>MAT_125</code> for combined hardening) or as user-supplied subroutines (<code>UMAT</code> for Abaqus/Standard implicit, <code>VUMAT</code> for Abaqus/Explicit) when a research yield function like Y-U or a new Barlat variant isn't natively available — writing one requires implementing exactly the four ingredients above plus their consistent (algorithmic) tangent stiffness for implicit convergence.</p>
+  </div>
+</section>
+
+<section id="s12">
+  <div class="eyebrow-num">12 / 12</div>
+  <h2 class="sec-title">Practical implementation: from test data to a validated material card</h2>
+  <p class="sec-sub">A calibration-to-validation workflow tying every previous section together.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Step</th><th>Action</th><th>Produces</th></tr>
+    <tr><td>1</td><td>Uniaxial tensile tests at 0°/45°/90° to rolling direction, with DIC or extensometry for width strain</td><td>Flow curve up to necking, Lankford r-values, initial yield stresses in each direction</td></tr>
+    <tr><td>2</td><td>Hydraulic bulge test (equibiaxial) ± cruciform biaxial test</td><td>Flow curve extended past the tensile necking strain; balanced-biaxial yield stress and r-value</td></tr>
+    <tr><td>3</td><td>Fit a hardening law (Section 8) — Swift, Voce, or a Swift–Voce blend — by least squares to the combined tension+bulge flow curve</td><td>K, n, ε₀ or σ₀, Q, b coefficients for the material card</td></tr>
+    <tr><td>4</td><td>Fit a yield function (Sections 6–7) to the directional yield stresses and r-values — Hill'48 for a fast/simple model, Barlat YLD2000-2d where locus accuracy matters (aluminum, AHSS)</td><td>F,G,H,N or α₁…α₈, m coefficients for the material card</td></tr>
+    <tr><td>5</td><td>If the process reverses load (multi-stage draw, roll forming, springback-critical parts): tension-compression or cyclic bend-unbend test, fit combined/Yoshida–Uemori hardening (Sections 9–10)</td><td>C, γ, and Y-U bounding-surface/stagnation parameters</td></tr>
+    <tr><td>6</td><td>Nakajima/Marciniak tests across the strain-path range</td><td>Experimental FLC for post-processing (Section 4)</td></tr>
+    <tr><td>7</td><td>Assemble the material card in the FE code; run the forming simulation</td><td>Predicted strain, thinning, and force history</td></tr>
+    <tr><td>8</td><td>Validate: compare predicted thinning/strain against a physically stamped and grid- or DIC-measured part; compare predicted strain states against the FLC</td><td>Confidence bounds on the model, or a list of coefficients to re-calibrate</td></tr>
+  </table>
+  </div>
+
+  <div class="note note-lab">
+    <div class="note-title">Measured in the lab</div>
+    <p>Validation grid strain is measured the same way as FLC calibration (Section 4): an electro-etched or printed circle grid on the blank, imaged before and after forming (or continuously by stereo-DIC during the press stroke), giving a full-field strain map to compare pointwise against simulation output — not just a single "did it crack" pass/fail, since a simulation can predict the right crack location for the wrong strain-path reason.</p>
+  </div>
+  <div class="note note-sim">
+    <div class="note-title">Used in simulation</div>
+    <p>A mismatch at validation almost always traces back to one of exactly four places: the flow curve extrapolation (Section 8) if thinning is wrong everywhere; the yield function (Sections 6–7) if the strain-path <em>direction</em> is wrong but magnitude is close; the hardening type (Section 9) if springback or a multi-stage stage-2 force is wrong; or friction/contact modeling if only the flange/draw-in region disagrees — plasticity model errors and tribology errors are the two most commonly conflated causes of a bad correlation, and separating them is usually the first diagnostic step.</p>
+  </div>
+</section>
+
+<div class="footer-note">Doctoral module reference · Formability, plasticity, and constitutive modeling of metallic sheet · widgets are simplified pedagogical demonstrators, not calibrated material data</div>
+
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+renderMathInElement(document.body,{
+  delimiters:[
+    {left:"$$",right:"$$",display:true},
+    {left:"\\(",right:"\\)",display:false}
+  ],
+  throwOnError:false
+});
+
+/* ---------------- Scrollspy ---------------- */
+(function(){
+  const links=[...document.querySelectorAll('.navlist a')];
+  const map=links.map(a=>({a,li:a.parentElement,el:document.querySelector(a.getAttribute('href'))})).filter(x=>x.el);
+  function onScroll(){
+    let current=map[0];
+    const y=window.scrollY+120;
+    for(const m of map){ if(m.el.offsetTop<=y) current=m; }
+    map.forEach(m=>m.li.classList.toggle('active',m===current));
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+})();
+
+/* ---------------- Hero illustration ---------------- */
+document.getElementById('heroSvgWrap').innerHTML = `
+<svg viewBox="0 0 360 300" width="100%" height="auto">
+  <defs>
+    <radialGradient id="domeGrad" cx="45%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#3a4854"/>
+      <stop offset="55%" stop-color="#232a30"/>
+      <stop offset="100%" stop-color="#181c20"/>
+    </radialGradient>
+  </defs>
+  <rect x="20" y="150" width="100" height="90" fill="#282d34" rx="4"/>
+  <rect x="240" y="150" width="100" height="90" fill="#282d34" rx="4"/>
+  <path d="M60 150 Q180 40 300 150" fill="url(#domeGrad)" stroke="#4a545f" stroke-width="2"/>
+  <path d="M60 150 Q180 40 300 150" fill="none" stroke="#c9722f" stroke-width="2" stroke-dasharray="2 5" opacity=".5"/>
+  <ellipse cx="180" cy="95" rx="14" ry="10" fill="none" stroke="#5b90b8" stroke-width="1.6"/>
+  <ellipse cx="180" cy="95" rx="30" ry="19" fill="none" stroke="#5b90b8" stroke-width="1.2" opacity=".7"/>
+  <ellipse cx="180" cy="95" rx="48" ry="30" fill="none" stroke="#5b90b8" stroke-width="1" opacity=".45"/>
+  <circle cx="180" cy="95" r="3.5" fill="#c9722f"/>
+  <path d="M300 155 Q310 100 200 60" fill="none" stroke="#c05252" stroke-width="2.4" stroke-dasharray="5 4"/>
+  <text x="300" y="52" fill="#c05252" font-family="IBM Plex Mono" font-size="10">necking risk</text>
+  <text x="140" y="270" fill="#6b7280" font-family="IBM Plex Mono" font-size="10">Nakajima dome — strain field grows outward from the pole</text>
+</svg>`;
+
+/* ---------------- Canvas plotting helpers ---------------- */
+function setupCanvas(cv){
+  const dpr=window.devicePixelRatio||1;
+  const w=cv.width, h=cv.height;
+  cv.style.width=w+'px'; cv.style.height=h+'px';
+  cv.width=w*dpr; cv.height=h*dpr;
+  const ctx=cv.getContext('2d');
+  ctx.scale(dpr,dpr);
+  return {ctx,w,h};
+}
+function makeFrame(ctx,w,h,margin,xmin,xmax,ymin,ymax){
+  const ml=margin.l??54, mr=margin.r??18, mt=margin.t??18, mb=margin.b??40;
+  const pw=w-ml-mr, ph=h-mt-mb;
+  const X=x=> ml + (x-xmin)/(xmax-xmin)*pw;
+  const Y=y=> mt + ph - (y-ymin)/(ymax-ymin)*ph;
+  return {X,Y,ml,mr,mt,mb,pw,ph};
+}
+function drawGrid(ctx,f,xmin,xmax,ymin,ymax,xstep,ystep,xlabel,ylabel){
+  ctx.strokeStyle='#262b31'; ctx.fillStyle='#6b7280'; ctx.font='11px IBM Plex Mono'; ctx.lineWidth=1;
+  for(let x=Math.ceil(xmin/xstep)*xstep; x<=xmax+1e-9; x+=xstep){
+    ctx.beginPath(); ctx.moveTo(f.X(x),f.mt); ctx.lineTo(f.X(x),f.mt+f.ph); ctx.stroke();
+    ctx.fillText(x.toFixed(Math.abs(xstep)<1?2:0), f.X(x)-10, f.mt+f.ph+16);
+  }
+  for(let y=Math.ceil(ymin/ystep)*ystep; y<=ymax+1e-9; y+=ystep){
+    ctx.beginPath(); ctx.moveTo(f.ml,f.Y(y)); ctx.lineTo(f.ml+f.pw,f.Y(y)); ctx.stroke();
+    ctx.fillText(y.toFixed(Math.abs(ystep)<1?2:0), f.ml-38, f.Y(y)+4);
+  }
+  ctx.strokeStyle='#454c55';
+  ctx.beginPath(); ctx.moveTo(f.ml,f.Y(0)); ctx.lineTo(f.ml+f.pw,f.Y(0)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(f.X(0),f.mt); ctx.lineTo(f.X(0),f.mt+f.ph); ctx.stroke();
+  ctx.fillStyle='#9aa1ac'; ctx.font='12px IBM Plex Sans';
+  ctx.fillText(xlabel, f.ml+f.pw/2-20, f.mt+f.ph+34);
+  ctx.save(); ctx.translate(14,f.mt+f.ph/2+30); ctx.rotate(-Math.PI/2); ctx.fillText(ylabel,0,0); ctx.restore();
+}
+function plotLine(ctx,f,pts,color,width,dash){
+  ctx.save();
+  ctx.strokeStyle=color; ctx.lineWidth=width||2.4; if(dash) ctx.setLineDash(dash);
+  ctx.beginPath();
+  pts.forEach((p,i)=>{ const x=f.X(p[0]), y=f.Y(p[1]); i? ctx.lineTo(x,y):ctx.moveTo(x,y); });
+  ctx.stroke(); ctx.restore();
+}
+
+/* ================= Widget 1: FLD ================= */
+(function(){
+  const cv=document.getElementById('fldCanvas'); if(!cv) return;
+  const {ctx,w,h}=setupCanvas(cv);
+  const t=document.getElementById('fld_t'), n=document.getElementById('fld_n'), k=document.getElementById('fld_k');
+  const tv=document.getElementById('fld_t_v'), nv=document.getElementById('fld_n_v'), kv=document.getElementById('fld_k_v');
+  const ro=document.getElementById('fld_readout');
+  let trial=null;
+  function flc0(){ return (23.3+14.13*parseFloat(t.value))*(parseFloat(n.value)/0.21)/100; }
+  function curve(){
+    const f0=flc0(), kk=parseFloat(k.value);
+    const pts=[];
+    for(let e2=-0.4; e2<=0; e2+=0.01) pts.push([e2, f0-e2]);
+    for(let e2=0; e2<=0.55; e2+=0.01) pts.push([e2, f0+kk*e2]);
+    return pts;
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const f=makeFrame(ctx,w,h,{},-0.4,0.55,0,1.0);
+    drawGrid(ctx,f,-0.4,0.55,0,1.0,0.1,0.1,'minor strain ε₂','major strain ε₁');
+    // path guides
+    plotLine(ctx,f,[[-0.5,0.5],[0,0]].map(p=>p), '#454c55',1,[3,3]);
+    const guides=[{lbl:'uniaxial',pts:[[-0.25,0.5],[0,0]]},{lbl:'plane strain',pts:[[0,0],[0,0.6]]},{lbl:'biaxial',pts:[[0,0],[0.5,0.5]]}];
+    ctx.font='10.5px IBM Plex Mono'; ctx.fillStyle='#6b7280';
+    plotLine(ctx,f,[[-0.25,0.5],[0,0]],'#454c55',1,[3,3]);
+    plotLine(ctx,f,[[0,0],[0,0.6]],'#454c55',1,[3,3]);
+    plotLine(ctx,f,[[0,0],[0.5,0.5]],'#454c55',1,[3,3]);
+    ctx.fillText('uniaxial',f.X(-0.30),f.Y(0.52));
+    ctx.fillText('plane strain',f.X(0.01),f.Y(0.58));
+    ctx.fillText('biaxial',f.X(0.34),f.Y(0.42));
+    const c=curve();
+    plotLine(ctx,f,c,'#c9722f',3);
+    ctx.fillStyle='rgba(90,154,111,.06)';
+    ctx.beginPath();
+    ctx.moveTo(f.X(c[0][0]),f.Y(0));
+    c.forEach(p=>ctx.lineTo(f.X(p[0]),f.Y(p[1])));
+    ctx.lineTo(f.X(c[c.length-1][0]),f.Y(0));
+    ctx.closePath(); ctx.fill();
+    if(trial){
+      const f0=flc0(), e2=trial.e2, kk=parseFloat(k.value);
+      const lim = e2<0 ? f0-e2 : f0+kk*e2;
+      const safe = trial.e1 < lim;
+      ctx.fillStyle= safe? '#5a9a6f':'#c05252';
+      ctx.beginPath(); ctx.arc(f.X(e2),f.Y(trial.e1),6,0,7); ctx.fill();
+      ro.innerHTML = `ε₂=<b>${e2.toFixed(3)}</b>, ε₁=<b>${trial.e1.toFixed(3)}</b> — limit at this ε₂ is <b>${lim.toFixed(3)}</b>.<br>Status: <b style="color:${safe?'#5a9a6f':'#c05252'}">${safe?'below FLC (formable)':'at/above FLC (necking risk)'}</b>`;
+    }
+    ctx.fillStyle='#9aa1ac'; ctx.font='11px IBM Plex Mono';
+    ctx.fillText(`FLC₀ = ${(flc0()*100).toFixed(1)}%`, f.ml+f.pw-110, f.mt+16);
+  }
+  cv.addEventListener('click',(e)=>{
+    const rect=cv.getBoundingClientRect();
+    const f=makeFrame(ctx,w,h,{},-0.4,0.55,0,1.0);
+    const px=(e.clientX-rect.left)*(w/rect.width), py=(e.clientY-rect.top)*(h/rect.height);
+    const e2 = -0.4 + (px-f.ml)/f.pw*(0.95);
+    const e1 = 0 + (1 - (py-f.mt)/f.ph)*1.0;
+    trial={e2:Math.max(-0.4,Math.min(0.55,e2)), e1:Math.max(0,Math.min(1.0,e1))};
+    draw();
+  });
+  [t,n,k].forEach(el=>el.addEventListener('input',()=>{ tv.textContent=parseFloat(t.value).toFixed(1)+' mm'; nv.textContent=parseFloat(n.value).toFixed(2); kv.textContent=parseFloat(k.value).toFixed(2); draw(); }));
+  tv.textContent=parseFloat(t.value).toFixed(1)+' mm'; nv.textContent=parseFloat(n.value).toFixed(2); kv.textContent=parseFloat(k.value).toFixed(2);
+  draw();
+})();
+
+/* ================= Widget 2: Isotropic loci ================= */
+(function(){
+  const cv=document.getElementById('isoCanvas'); if(!cv) return;
+  const {ctx,w,h}=setupCanvas(cv);
+  const vm=document.getElementById('show_vm'), tr=document.getElementById('show_tr');
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const f=makeFrame(ctx,w,h,{},-1.6,1.6,-1.6,1.6);
+    drawGrid(ctx,f,-1.6,1.6,-1.6,1.6,0.4,0.4,'σ₁ / σ_Y','σ₂ / σ_Y');
+    if(vm.checked){
+      const pts=[];
+      for(let a=0;a<=360;a+=2){
+        const th=a*Math.PI/180;
+        // von Mises plane-stress ellipse param via rotated axes: solve r on line direction theta
+        const dx=Math.cos(th), dy=Math.sin(th);
+        // sigma1^2 - sigma1 sigma2 + sigma2^2 = 1 ; sigma1=r dx, sigma2=r dy
+        const A = dx*dx - dx*dy + dy*dy;
+        const r=Math.sqrt(1/A);
+        pts.push([r*dx,r*dy]);
+      }
+      plotLine(ctx,f,pts,'#5b90b8',2.6);
+    }
+    if(tr.checked){
+      const verts=[[1,0],[1,1],[0,1],[-1,0],[-1,-1],[0,-1],[1,0]];
+      plotLine(ctx,f,verts,'#c9722f',2.6);
+    }
+  }
+  [vm,tr].forEach(el=>el.addEventListener('change',draw));
+  draw();
+})();
+
+/* ================= Widget 3: Anisotropic loci ================= */
+(function(){
+  const cv=document.getElementById('anisoCanvas'); if(!cv) return;
+  const {ctx,w,h}=setupCanvas(cv);
+  const showVM=document.getElementById('a_show_vm'), showHill=document.getElementById('a_show_hill'), showHos=document.getElementById('a_show_hos');
+  const r0=document.getElementById('a_r0'), r90=document.getElementById('a_r90'), mE=document.getElementById('a_m');
+  const r0v=document.getElementById('a_r0_v'), r90v=document.getElementById('a_r90_v'), mv=document.getElementById('a_m_v');
+  const ro=document.getElementById('aniso_readout');
+  function hillLocus(R0,R90){
+    const G=1/(1+R0), H=R0/(1+R0), F=R0/(R90*(1+R0));
+    const pts=[];
+    for(let a=0;a<=360;a+=2){
+      const th=a*Math.PI/180, dx=Math.cos(th), dy=Math.sin(th);
+      // G x^2 + F y^2 + H(x-y)^2 = 1 ; x=r dx, y=r dy
+      const A = G*dx*dx + F*dy*dy + H*(dx-dy)*(dx-dy);
+      const r=Math.sqrt(1/A);
+      pts.push([r*dx,r*dy]);
+    }
+    return pts;
+  }
+  function hosfordLocus(m){
+    const pts=[];
+    for(let a=0;a<=360;a+=2){
+      const th=a*Math.PI/180, dx=Math.cos(th), dy=Math.sin(th);
+      // bisection for r: |r dx|^m + |r dy|^m + |r dx - r dy|^m = 2
+      let lo=0, hi=3;
+      for(let it=0; it<40; it++){
+        const mid=(lo+hi)/2;
+        const val=Math.pow(Math.abs(mid*dx),m)+Math.pow(Math.abs(mid*dy),m)+Math.pow(Math.abs(mid*dx-mid*dy),m);
+        if(val>2) hi=mid; else lo=mid;
+      }
+      pts.push([lo*dx,lo*dy]);
+    }
+    return pts;
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const f=makeFrame(ctx,w,h,{},-1.8,1.8,-1.8,1.8);
+    drawGrid(ctx,f,-1.8,1.8,-1.8,1.8,0.4,0.4,'σ₁ / σ_Y₀','σ₂ / σ_Y₀');
+    if(showVM.checked){
+      const pts=[]; for(let a=0;a<=360;a+=3){const th=a*Math.PI/180,dx=Math.cos(th),dy=Math.sin(th);const A=dx*dx-dx*dy+dy*dy;pts.push([Math.sqrt(1/A)*dx,Math.sqrt(1/A)*dy]);}
+      plotLine(ctx,f,pts,'#6b7280',1.8,[4,3]);
+    }
+    if(showHill.checked) plotLine(ctx,f,hillLocus(parseFloat(r0.value),parseFloat(r90.value)),'#5b90b8',2.6);
+    if(showHos.checked) plotLine(ctx,f,hosfordLocus(parseFloat(mE.value)),'#c9722f',2.6);
+    ro.innerHTML = `r̄ ≈ <b>${((parseFloat(r0.value)+2*1+parseFloat(r90.value))/4).toFixed(2)}</b> (assuming r₄₅=1)<br>Higher r̄ → locus stretches toward equibiaxial (upper-right) → better drawability.`;
+  }
+  [r0,r90,mE].forEach((el,i)=>{
+    const disp=[r0v,r90v,mv][i];
+    el.addEventListener('input',()=>{ disp.textContent=el===mE?el.value:parseFloat(el.value).toFixed(2); draw(); });
+  });
+  [showVM,showHill,showHos].forEach(el=>el.addEventListener('change',draw));
+  r0v.textContent=parseFloat(r0.value).toFixed(2); r90v.textContent=parseFloat(r90.value).toFixed(2); mv.textContent=mE.value;
+  draw();
+})();
+
+/* ================= Widget 4: Hardening laws ================= */
+(function(){
+  const cv=document.getElementById('hardCanvas'); if(!cv) return;
+  const {ctx,w,h}=setupCanvas(cv);
+  const ids=['h_show_hol','h_show_lud','h_show_swi','h_show_voc','h_K','h_n','h_s0','h_e0','h_Q','h_b'];
+  const [showHol,showLud,showSwi,showVoc,K,n,s0,e0,Q,b]=ids.map(id=>document.getElementById(id));
+  const vids=['h_K_v','h_n_v','h_s0_v','h_e0_v','h_Q_v','h_b_v'].map(id=>document.getElementById(id));
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const f=makeFrame(ctx,w,h,{},0,0.6,0,1200);
+    drawGrid(ctx,f,0,0.6,0,1200,0.1,200,'true plastic strain ε','true stress σ (MPa)');
+    const Kv=parseFloat(K.value), nv=parseFloat(n.value), s0v=parseFloat(s0.value), e0v=parseFloat(e0.value), Qv=parseFloat(Q.value), bv=parseFloat(b.value);
+    const steps=[]; for(let e=0.001;e<=0.6;e+=0.005) steps.push(e);
+    if(showHol.checked) plotLine(ctx,f, steps.map(e=>[e, Kv*Math.pow(e,nv)]), '#5b90b8');
+    if(showLud.checked) plotLine(ctx,f, steps.map(e=>[e, s0v+Kv*Math.pow(e,nv)]), '#5a9a6f');
+    if(showSwi.checked) plotLine(ctx,f, steps.map(e=>[e, Kv*Math.pow(e0v+e,nv)]), '#c9722f');
+    if(showVoc.checked) plotLine(ctx,f, steps.map(e=>[e, s0v+Qv*(1-Math.exp(-bv*e))]), '#c05252');
+  }
+  ids.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el.type==='range'){
+      el.addEventListener('input',()=>{ draw(); syncLabels(); });
+    } else {
+      el.addEventListener('change',draw);
+    }
+  });
+  function syncLabels(){
+    vids[0].textContent=parseFloat(K.value).toFixed(0);
+    vids[1].textContent=parseFloat(n.value).toFixed(2);
+    vids[2].textContent=parseFloat(s0.value).toFixed(0);
+    vids[3].textContent=parseFloat(e0.value).toFixed(3);
+    vids[4].textContent=parseFloat(Q.value).toFixed(0);
+    vids[5].textContent=parseFloat(b.value).toFixed(0);
+  }
+  syncLabels(); draw();
+})();
+
+/* ================= Widget 5: Bauschinger / Y-U style demo ================= */
+(function(){
+  const cv=document.getElementById('bauCanvas'); if(!cv) return;
+  const {ctx,w,h}=setupCanvas(cv);
+  const C=document.getElementById('b_C'), g=document.getElementById('b_g'), Q=document.getElementById('b_Q'), bb=document.getElementById('b_b');
+  const Cv=document.getElementById('b_C_v'), gv=document.getElementById('b_g_v'), Qv=document.getElementById('b_Q_v'), bv=document.getElementById('b_b_v');
+  const ro=document.getElementById('bau_readout');
+  const sigma0=200; // MPa initial yield
+  function simulate(Cp,gam,Qp,bp){
+    // strain path: 0 -> +0.05 -> -0.05 -> +0.05, small increments
+    const path=[]; const n1=200;
+    function seg(from,to){ for(let i=1;i<=n1;i++) path.push(from+(to-from)*i/n1); }
+    seg(0,0.05); seg(0.05,-0.05); seg(-0.05,0.05);
+    let alpha=0, ebar=0, pts=[], ptsIso=[];
+    let epsPrev=0;
+    for(const e of path){
+      const de=e-epsPrev; epsPrev=e;
+      const debar=Math.abs(de);
+      ebar+=debar;
+      // Armstrong-Frederick nonlinear kinematic back-stress evolution
+      alpha += Cp*de - gam*alpha*debar;
+      // Voce isotropic growth of yield-surface size
+      const R = Qp*(1-Math.exp(-bp*ebar));
+      const loadSign = de>=0 ? 1 : -1;
+      // combined model: current flow stress = back-stress (shifts center) + isotropic size in direction of loading
+      pts.push([e, alpha + loadSign*(sigma0+R)]);
+      // isotropic-only reference: no back-stress at all, symmetric about zero
+      ptsIso.push([e, loadSign*(sigma0+R)]);
+    }
+    return {pts,ptsIso};
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const f=makeFrame(ctx,w,h,{},-0.06,0.06,-500,500);
+    drawGrid(ctx,f,-0.06,0.06,-500,500,0.02,200,'engineering plastic strain','stress σ (MPa)');
+    const {pts,ptsIso}=simulate(parseFloat(C.value),parseFloat(g.value),parseFloat(Q.value),parseFloat(bb.value));
+    plotLine(ctx,f,ptsIso,'#6b7280',1.6,[4,3]);
+    plotLine(ctx,f,pts,'#c9722f',2.6);
+    ro.innerHTML = `<span style="color:#c9722f">■</span> combined isotropic+kinematic (Bauschinger visible)<br><span style="color:#6b7280">- -</span> isotropic-only reference (no Bauschinger effect)`;
+  }
+  [C,g,Q,bb].forEach(el=>el.addEventListener('input',()=>{
+    Cv.textContent=parseFloat(C.value).toFixed(0); gv.textContent=parseFloat(g.value).toFixed(0);
+    Qv.textContent=parseFloat(Q.value).toFixed(0); bv.textContent=parseFloat(bb.value).toFixed(0);
+    draw();
+  }));
+  Cv.textContent=parseFloat(C.value).toFixed(0); gv.textContent=parseFloat(g.value).toFixed(0);
+  Qv.textContent=parseFloat(Q.value).toFixed(0); bv.textContent=parseFloat(bb.value).toFixed(0);
+  draw();
+})();
+</script>
+</body>
+</html>

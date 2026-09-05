@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leis de Encruamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 p-4 md:p-8">
+    <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
+        
+        <!-- Sidebar Controles -->
+        <div class="w-full md:w-1/3 bg-gray-100 p-6 border-r border-gray-200 overflow-y-auto max-h-[850px]">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">Modelos de Encruamento</h2>
+            <p class="text-sm text-gray-600 mb-6">
+                Curvas Tensão Verdadeira x Deformação Verdadeira. Ative e ajuste as leis para verificar como modelam a resposta plástica do material.
+            </p>
+            
+            <!-- Hollomon -->
+            <div class="mb-6 p-3 bg-white rounded shadow-sm border-l-4 border-blue-500">
+                <label class="flex items-center space-x-2 font-bold text-blue-800 mb-2">
+                    <input type="checkbox" id="chkHollomon" checked class="w-4 h-4">
+                    <span>Hollomon (&sigma; = K &middot; &epsilon;<sup>n</sup>)</span>
+                </label>
+                <div class="space-y-2 pl-6">
+                    <div>
+                        <label class="text-xs">K (Coef. Resistência) [<span id="hKVal">500</span> MPa]</label>
+                        <input type="range" id="hK" min="200" max="1500" step="10" value="500" class="w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs">n (Exp. Encruamento) [<span id="hnVal">0.2</span>]</label>
+                        <input type="range" id="hn" min="0.05" max="0.5" step="0.01" value="0.2" class="w-full">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Swift -->
+            <div class="mb-6 p-3 bg-white rounded shadow-sm border-l-4 border-green-500">
+                <label class="flex items-center space-x-2 font-bold text-green-800 mb-2">
+                    <input type="checkbox" id="chkSwift" checked class="w-4 h-4">
+                    <span>Swift (&sigma; = K(&epsilon;<sub>0</sub> + &epsilon;)<sup>n</sup>)</span>
+                </label>
+                <div class="space-y-2 pl-6">
+                    <div>
+                        <label class="text-xs">&epsilon;<sub>0</sub> (Pré-deformação) [<span id="se0Val">0.01</span>]</label>
+                        <input type="range" id="se0" min="0.001" max="0.1" step="0.001" value="0.01" class="w-full">
+                    </div>
+                </div>
+                <p class="text-[10px] text-gray-500 pl-6 mt-1">* Utiliza K e n do Hollomon.</p>
+            </div>
+
+            <!-- Voce -->
+            <div class="mb-6 p-3 bg-white rounded shadow-sm border-l-4 border-red-500">
+                <label class="flex items-center space-x-2 font-bold text-red-800 mb-2">
+                    <input type="checkbox" id="chkVoce" class="w-4 h-4">
+                    <span>Voce (&sigma; = &sigma;<sub>s</sub> - (&sigma;<sub>s</sub> - &sigma;<sub>0</sub>)e<sup>-B&epsilon;</sup>)</span>
+                </label>
+                <div class="space-y-2 pl-6">
+                    <div>
+                        <label class="text-xs">&sigma;<sub>0</sub> (Esc. Inicial) [<span id="vS0Val">150</span> MPa]</label>
+                        <input type="range" id="vS0" min="50" max="400" step="10" value="150" class="w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs">&sigma;<sub>s</sub> (Saturação) [<span id="vSsVal">400</span> MPa]</label>
+                        <input type="range" id="vSs" min="200" max="800" step="10" value="400" class="w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs">B (Taxa Relaxação) [<span id="vBVal">15</span>]</label>
+                        <input type="range" id="vB" min="1" max="50" step="1" value="15" class="w-full">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ludwik -->
+            <div class="mb-6 p-3 bg-white rounded shadow-sm border-l-4 border-purple-500">
+                <label class="flex items-center space-x-2 font-bold text-purple-800 mb-2">
+                    <input type="checkbox" id="chkLudwik" class="w-4 h-4">
+                    <span>Ludwik (&sigma; = &sigma;<sub>0</sub> + K &middot; &epsilon;<sup>n</sup>)</span>
+                </label>
+                <div class="space-y-2 pl-6">
+                    <div>
+                        <label class="text-xs">&sigma;<sub>0</sub> (Esc. Inicial) [<span id="lS0Val">150</span> MPa]</label>
+                        <input type="range" id="lS0" min="50" max="400" step="10" value="150" class="w-full">
+                    </div>
+                </div>
+                <p class="text-[10px] text-gray-500 pl-6 mt-1">* Utiliza K e n do Hollomon.</p>
+            </div>
+
+            <div class="mt-4 text-xs text-gray-700 bg-gray-200 p-3 rounded">
+                <strong>Análise:</strong> Hollomon falha ao prever &sigma; > 0 em &epsilon; = 0. Swift corrige isso com &epsilon;<sub>0</sub>. Ambos tendem ao infinito. Voce modela a saturação (recuperação dinâmica, comum em Al/Cu em altas temperaturas). Ludwik introduz um &sigma;<sub>0</sub> explícito.
+            </div>
+        </div>
+
+        <!-- Área do Gráfico -->
+        <div class="w-full md:w-2/3 p-6 flex flex-col">
+            <div id="plotDiv" class="flex-grow w-full min-h-[500px]"></div>
+        </div>
+    </div>
+
+    <script>
+        function updatePlot() {
+            // Pegar e atualizar valores
+            const hK = parseFloat(document.getElementById('hK').value); document.getElementById('hKVal').innerText = hK;
+            const hn = parseFloat(document.getElementById('hn').value); document.getElementById('hnVal').innerText = hn;
+            const se0 = parseFloat(document.getElementById('se0').value); document.getElementById('se0Val').innerText = se0;
+            const vS0 = parseFloat(document.getElementById('vS0').value); document.getElementById('vS0Val').innerText = vS0;
+            const vSs = parseFloat(document.getElementById('vSs').value); document.getElementById('vSsVal').innerText = vSs;
+            const vB = parseFloat(document.getElementById('vB').value); document.getElementById('vBVal').innerText = vB;
+            const lS0 = parseFloat(document.getElementById('lS0').value); document.getElementById('lS0Val').innerText = lS0;
+
+            const eps = [];
+            for (let e = 0.001; e <= 0.6; e += 0.005) {
+                eps.push(e);
+            }
+
+            const data = [];
+
+            if (document.getElementById('chkHollomon').checked) {
+                const sig = eps.map(e => hK * Math.pow(e, hn));
+                data.push({ x: eps, y: sig, mode: 'lines', name: 'Hollomon', line: {color: '#3b82f6', width: 3} });
+            }
+
+            if (document.getElementById('chkSwift').checked) {
+                const sig = eps.map(e => hK * Math.pow(se0 + e, hn));
+                data.push({ x: eps, y: sig, mode: 'lines', name: 'Swift', line: {color: '#22c55e', width: 3, dash: 'dash'} });
+            }
+
+            if (document.getElementById('chkVoce').checked) {
+                const sig = eps.map(e => vSs - (vSs - vS0) * Math.exp(-vB * e));
+                data.push({ x: eps, y: sig, mode: 'lines', name: 'Voce', line: {color: '#ef4444', width: 3} });
+            }
+
+            if (document.getElementById('chkLudwik').checked) {
+                const sig = eps.map(e => lS0 + hK * Math.pow(e, hn));
+                data.push({ x: eps, y: sig, mode: 'lines', name: 'Ludwik', line: {color: '#a855f7', width: 3, dash: 'dot'} });
+            }
+
+            const layout = {
+                title: 'Curvas de Encruamento (Tensão x Deformação)',
+                xaxis: {title: 'Deformação Plástica Verdadeira (&epsilon;)', range: [0, 0.6]},
+                yaxis: {title: 'Tensão Verdadeira (&sigma;) [MPa]', range: [0, 1000]},
+                showlegend: true,
+                margin: {t: 50, l: 60, r: 20, b: 50}
+            };
+
+            Plotly.newPlot('plotDiv', data, layout, {responsive: true});
+        }
+
+        // Listeners
+        const inputs = ['chkHollomon', 'chkSwift', 'chkVoce', 'chkLudwik', 'hK', 'hn', 'se0', 'vS0', 'vSs', 'vB', 'lS0'];
+        inputs.forEach(id => document.getElementById(id).addEventListener('input', updatePlot));
+
+        updatePlot();
+    </script>
+</body>
+</html>

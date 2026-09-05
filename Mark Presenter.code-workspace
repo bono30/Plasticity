@@ -1,0 +1,28 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true
+    },
+    "editor.formatOnSave": false,
+    "liveServer.settings.port": 5500
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Preview presentation",
+        "type": "shell",
+        "command": "python",
+        "args": ["-m", "http.server", "8000"],
+        "isBackground": true,
+        "problemMatcher": []
+      }
+    ]
+  }
+}

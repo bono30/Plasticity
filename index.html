@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metal Formability | Materials Engineering</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">MF</span><span>Metal Formability <small>materials engineering</small></span></div>
+      <div class="topbar-meta"><span class="live-dot"></span><span id="progressLabel">01 / 09</span><button class="icon-button" id="fullscreenButton" title="Toggle fullscreen">⛶</button></div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="course-label">Materials Engineering</div>
+        <nav id="chapterNav" aria-label="Presentation chapters">
+          <button class="chapter active" data-slide="0"><span>01</span><b>Why formability?</b><em>map the problem</em></button>
+          <button class="chapter" data-slide="1"><span>02</span><b>From microstructure to limit</b><em>mechanics of failure</em></button>
+          <button class="chapter" data-slide="2"><span>03</span><b>Formability test lab</b><em>measure the boundary</em></button>
+          <button class="chapter" data-slide="3"><span>04</span><b>FLC / FLD studio</b><em>read the diagram</em></button>
+          <button class="chapter" data-slide="4"><span>05</span><b>Yield surfaces</b><em>stress space</em></button>
+          <button class="chapter" data-slide="5"><span>06</span><b>Hardening laws</b><em>fit the material</em></button>
+          <button class="chapter" data-slide="6"><span>07</span><b>Reverse loading</b><em>Bauschinger + Y-U</em></button>
+          <button class="chapter" data-slide="7"><span>08</span><b>Simulation recipe</b><em>from coupon to FE</em></button>
+          <button class="chapter" data-slide="8"><span>09</span><b>Interactive Tool</b><em>open a focused tool</em></button>
+        </nav>
+        <div class="sidebar-foot"><span class="key">SPACE</span> next chapter<br><span class="key">← →</span> navigate</div>
+      </aside>
+
+      <section class="stage">
+        <section class="slide active" data-slide="0">
+          <div class="eyebrow">01 — ORIENTATION</div>
+          <div class="topic-intro"><div><h1>What is <span>metal forming formability?</span></h1><p class="lede">Formability is the ability of a material to undergo the deformation demanded by a manufacturing process while remaining free of unacceptable defects.</p></div><div class="definition-card"><div class="eq-label">operational definition</div><div class="equation">F = { process parameters | flow is stable and the part meets its specification }</div><p>It is a process window, not one number from a tensile test. The same sheet can be safe in a drawing operation and fail in a stretching operation.</p></div></div>
+          <div class="topic1-grid">
+            <div class="hero-visual" aria-label="Sheet forming mechanism schematic"><canvas id="heroCanvas" width="620" height="360"></canvas><div class="visual-caption"><span>stable plastic flow</span><span>localization → fracture</span></div></div>
+            <div class="concept-stack"><div class="concept-block"><span class="concept-index">01</span><div><h3>Conformability</h3><p>Can the blank acquire the required geometry under the tool kinematics, contact, friction, and blank-holder force?</p></div></div><div class="concept-block"><span class="concept-index">02</span><div><h3>Formability</h3><p>Can it reach the required strains without diffuse necking, localized necking, wrinkling, or fracture?</p></div></div><div class="concept-block"><span class="concept-index">03</span><div><h3>Process window</h3><p>Which combinations of die radius, lubrication, speed, temperature, and force produce an acceptable part?</p></div></div></div>
+          </div>
+          <div class="worked-example"><div class="example-label">worked example · deep drawing a cylindrical cup</div><div class="example-content"><div><h3>Why a good tensile elongation can still fail</h3><p>A 1.20 mm sheet has uniform elongation of 22%, but the cup wall develops a crack near the punch radius. The tensile number describes one uniaxial path; the tool imposes changing combinations of drawing, bending, and biaxial stretching.</p></div><div class="example-calculation"><div><span>blank diameter</span><b>D₀ = 90 mm</b></div><div><span>punch diameter</span><b>dₚ = 50 mm</b></div><div><span>drawing ratio</span><b>β = D₀ / dₚ = 1.80</b></div><div><span>interpretation</span><b class="orange-text">near the process limit</b></div></div><div class="example-conclusion"><strong>Engineering decision</strong><p>Reduce β with a larger punch or redraw step, improve lubrication, or change the blank-holder force. Then validate with a cup test and local strain measurement.</p></div></div></div>
+          <div class="bottom-strip"><div><span class="stat-value">1</span><span class="stat-label">material</span></div><div><span class="stat-value">∞</span><span class="stat-label">strain paths</span></div><div><span class="stat-value">0</span><span class="stat-label">acceptable defects</span></div><div class="prompt">The useful question is: <strong>what deformation path does the process impose, and what mechanism ends stable plastic flow?</strong></div></div>
+        </section>
+
+        <section class="slide" data-slide="1">
+          <div class="eyebrow">02 — STRUCTURE → RESPONSE</div>
+          <div class="slide-heading"><div><h2>One sheet. Many hidden variables.</h2><p>Change the microstructure, loading direction, or path and the same alloy becomes a different forming problem.</p></div><div class="tag">variable reveal</div></div>
+          <div class="reveal-layout"><div class="variable-rail" id="variableRail"></div><div class="variable-stage"><div class="variable-media"><img id="variableImage" src="https://commons.wikimedia.org/wiki/Special:FilePath/Copper%20alloy%20microstructure.jpg?width=1000" alt="Real copper alloy microstructure under optical microscopy"><div class="image-caption"><span id="variableCaption">Copper alloy microstructure</span><a id="variableSource" href="https://commons.wikimedia.org/wiki/File:Copper_alloy_microstructure.jpg" target="_blank" rel="noreferrer">image source ↗</a></div></div><div class="variable-copy"><div class="panel-kicker" id="variableKicker">layer 01 · microstructure</div><h3 id="variableTitle">The sheet is not continuous matter</h3><p id="variableText"></p><div class="variable-columns"><button class="variable-column-button active" data-detail="0"><span>how to measure</span><b id="variableMeasure"></b></button><button class="variable-column-button" data-detail="1"><span>what changes in forming</span><b id="variableEffect"></b></button><button class="variable-column-button" data-detail="2"><span>model consequence</span><b id="variableModel"></b></button></div><div class="variable-detail" id="variableDetail"></div><div class="reference-line"><span>anchor reference</span><b id="variableReference"></b></div><div class="explore-feed" id="exploreFeed"></div></div></div></div>
+          <div class="reveal-footer"><strong>Reveal the chain:</strong><span>microstructure</span><i>→</i><span>texture</span><i>→</i><span>mechanical response</span><i>→</i><span>anisotropy</span><i>→</i><span>hardening</span><i>→</i><span>stress state + path</span></div>
+        </section>
+
+        <section class="slide" data-slide="2">
+          <div class="eyebrow">03 — EXPERIMENTAL METHODS</div>
+          <div class="slide-heading"><div><h2>Five tests, five views of flow.</h2><p>Use the test to create a controlled path through stress space, then extract a quantity your model can reproduce.</p></div><div class="tag">click a specimen</div></div>
+          <div class="test-lab"><div class="test-list" id="testList"></div><div class="test-detail"><div class="test-illustration" id="testIllustration"></div><div class="test-copy"><div class="panel-kicker" id="testKind">circular cup test</div><h3 id="testName">Erichsen / Olsen</h3><p id="testDescription"></p><div class="formula-line" id="testFormula"></div><div class="measurement-grid"><div><span>measured</span><b id="testMeasured"></b></div><div><span>best for</span><b id="testBest"></b></div><div><span>watch out</span><b id="testCaution"></b></div></div></div></div></div>
+          <div class="lab-footer"><span class="legend-dot cyan"></span> tool / punch <span class="legend-dot orange"></span> sheet <span class="legend-dot lime"></span> deformation zone <span class="lab-note">A test is only useful when boundary definition and specimen geometry are recorded with it.</span></div>
+          <div class="lab-investigation-feed" id="labInvestigationFeed"></div>
+        </section>
+
+        <section class="slide" data-slide="3">
+          <div class="eyebrow">04 — FORMING LIMIT DIAGRAM</div>
+          <div class="slide-heading"><div><h2>Find the boundary, then respect the path.</h2><p>Explore how changing the strain path shifts the measured major strain at localized necking.</p></div><div class="tag">interactive plot</div></div>
+          <div class="plot-layout"><div class="plot-card"><canvas id="flcCanvas" width="780" height="470"></canvas><div class="plot-legend"><span><i class="line cyan"></i> FLC envelope</span><span><i class="dot orange"></i> test points</span><span><i class="line lime"></i> current path</span></div></div><div class="controls-card"><div class="panel-kicker">strain-path explorer</div><label>minor strain ratio <output id="minorRatioValue">0.00</output><input id="minorRatio" type="range" min="-0.50" max="1.00" step="0.01" value="0.00"></label><label>initial thickness <output id="thicknessValue">1.20 mm</output><input id="thickness" type="range" min="0.60" max="2.00" step="0.05" value="1.20"></label><label>hardening exponent n <output id="nValue">0.22</output><input id="nExponent" type="range" min="0.08" max="0.40" step="0.01" value="0.22"></label><div class="readout"><span>predicted limit</span><strong id="limitReadout">ε₁ = 0.58</strong><small>engineering estimate for teaching; calibrate to measured FLC for production</small></div><div class="equation-mini">ε<sub>1</sub><sup>lim</sup> ≈ 0.35 + 0.55n − 0.12|β − 0.15|</div></div></div>
+          <div class="definition-row"><div><b>FLC</b><span>major strain at onset of localized necking, plotted against minor strain.</span></div><div><b>FLD</b><span>the diagram and its safe / failure interpretation for a given sheet and test convention.</span></div><div><b>measurement</b><span>grid analysis, DIC, or thickness/strain history; report gauge, filtering, and necking criterion.</span></div></div>
+          <div class="topic-resource-feed" id="flcResearchFeed"></div>
+        </section>
+
+        <section class="slide" data-slide="4">
+          <div class="eyebrow">05 — PLASTICITY</div>
+          <div class="slide-heading"><div><h2>Yield is a surface in stress space.</h2><p>Equivalent stress collapses a multiaxial state into a scalar; the yield function decides whether plastic flow begins.</p></div><div class="tag">drag the stress state</div></div>
+          <div class="yield-layout"><div class="yield-card"><canvas id="yieldCanvas" width="730" height="500"></canvas><div class="axis-note">normalized π-plane · center = hydrostatic axis</div></div><div class="controls-card"><div class="panel-kicker">stress state</div><label>σ₁ / σ<sub>y</sub> <output id="sigma1Value">1.00</output><input id="sigma1" type="range" min="-1.50" max="1.80" step="0.01" value="1.00"></label><label>σ₂ / σ<sub>y</sub> <output id="sigma2Value">0.00</output><input id="sigma2" type="range" min="-1.50" max="1.80" step="0.01" value="0.00"></label><label>criterion <select id="yieldCriterion"><option value="mises">von Mises</option><option value="tresca">Tresca</option><option value="hill">Hill '48 (illustrative)</option></select></label><div class="formula-box"><div id="yieldFormula">σ̄ = √[ ((σ₁−σ₂)² + (σ₂−σ₃)² + (σ₃−σ₁)²) / 2 ]</div><small id="yieldExplain">J₂ measures distortional energy; hydrostatic stress does not change σ̄ in von Mises plasticity.</small></div><div class="readout"><span>equivalent stress</span><strong id="equivReadout">σ̄ / σ<sub>y</sub> = 1.22</strong><small id="yieldStatus">outside the surface → plastic loading</small></div></div></div>
+          <div class="criterion-row"><div><b>Tresca</b><span>maximum shear stress; hexagonal section in the deviatoric plane.</span></div><div><b>von Mises</b><span>second deviatoric invariant J₂; smooth circular section.</span></div><div><b>Hill '48 / Barlat</b><span>directional coefficients warp the surface to match anisotropic sheet response.</span></div></div>
+          <div class="topic-resource-feed" id="yieldResearchFeed"></div>
+        </section>
+
+        <section class="slide" data-slide="5">
+          <div class="eyebrow">06 — HARDENING</div>
+          <div class="slide-heading"><div><h2>Choose a curve that remembers the experiment.</h2><p>Each law is a hypothesis about how resistance evolves with accumulated plastic strain.</p></div><div class="tag">fit + compare</div></div>
+          <div class="hardening-layout"><div class="plot-card"><canvas id="hardeningCanvas" width="790" height="470"></canvas><div class="plot-legend"><span><i class="line cyan"></i> Hollomon</span><span><i class="line orange"></i> Swift</span><span><i class="line lime"></i> Voce</span><span><i class="line pink"></i> Ludwik</span></div></div><div class="controls-card"><div class="panel-kicker">parameter sandbox</div><label>strength K <output id="kValue">620 MPa</output><input id="kHardening" type="range" min="350" max="900" step="10" value="620"></label><label>exponent n <output id="nHardValue">0.22</output><input id="nHardening" type="range" min="0.08" max="0.45" step="0.01" value="0.22"></label><label>saturation Q <output id="qValue">260 MPa</output><input id="qHardening" type="range" min="100" max="500" step="10" value="260"></label><div class="formula-stack"><div><b>Hollomon</b> σ = Kε<sub>p</sub><sup>n</sup></div><div><b>Swift</b> σ = K(ε₀ + ε<sub>p</sub>)<sup>n</sup></div><div><b>Ludwik</b> σ = σ₀ + Kε<sub>p</sub><sup>n</sup></div><div><b>Voce</b> σ = σ<sub>sat</sub> − Qe<sup>−βε<sub>p</sub></sup></div></div><div class="readout"><span>modeling note</span><strong id="hardeningReadout">Swift is robust near the yield transition</strong><small>Fit true stress–true plastic strain after correcting the elastic strain.</small></div></div></div>
+          <div class="definition-row"><div><b>Isotropic</b><span>the surface expands uniformly: useful for monotonic loading.</span></div><div><b>Kinematic</b><span>the surface translates: captures directional memory after reversal.</span></div><div><b>Combined</b><span>expand + translate: practical for cyclic forming histories.</span></div></div>
+          <div class="topic-resource-feed" id="hardeningResearchFeed"></div>
+        </section>
+
+        <section class="slide" data-slide="6">
+          <div class="eyebrow">07 — PATH DEPENDENCE</div>
+          <div class="slide-heading"><div><h2>Reverse the load. The material answers differently.</h2><p>The Bauschinger effect is a warning against treating hardening as a one-way scalar curve.</p></div><div class="tag">toggle reversal</div></div>
+          <div class="reverse-layout"><div class="reverse-visual"><canvas id="reverseCanvas" width="790" height="470"></canvas><button class="reverse-button" id="reverseButton">↻ apply compression reversal</button></div><div class="controls-card"><div class="panel-kicker">Yoshida–Uemori lens</div><div class="model-block"><span class="model-symbol">α</span><div><b>backstress</b><p>Translates the yield surface and controls directional memory.</p></div></div><div class="model-block"><span class="model-symbol">β</span><div><b>bounding surface</b><p>Limits the center and size of the evolving elastic region.</p></div></div><div class="model-block"><span class="model-symbol">B</span><div><b>distortional hardening</b><p>Allows the transient response after reversal to relax toward a stabilized state.</p></div></div><div class="formula-box">f = φ(σ − α) − (Y + R) ≤ 0<div class="small-copy">Implement as state variables updated at every integration point, not as a post-processing correction.</div></div><div class="readout"><span>design implication</span><strong id="reverseReadout">forward-only model overpredicts reverse strength</strong><small>Use tension–compression or draw–reverse-draw data to identify parameters.</small></div></div></div>
+          <div class="topic-resource-feed" id="reverseResearchFeed"></div>
+        </section>
+
+        <section class="slide" data-slide="7">
+          <div class="eyebrow">08 — NUMERICAL IMPLEMENTATION</div>
+          <div class="slide-heading"><div><h2>From coupon data to a trustworthy FE model.</h2><p>A practical implementation recipe with explicit decisions, measurements, and validation gates.</p></div><div class="tag">workflow</div></div>
+          <div class="workflow" id="workflow"></div>
+          <div class="simulation-footer"><div class="equation-card compact"><div class="eq-label">return mapping, conceptually</div><div class="equation">trial stress → yield check → plastic correction → update state variables</div><div class="eq-note">At each increment: evaluate f(σ, κ), enforce consistency, update εᵖ, α, R, and rotate material directions when required.</div></div><div class="validation-card"><div class="panel-kicker">minimum validation set</div><div class="validation-item"><span>01</span> tensile curves at 0° / 45° / 90°</div><div class="validation-item"><span>02</span> r-values + biaxial yield point</div><div class="validation-item"><span>03</span> Nakajima / Marciniak FLC</div><div class="validation-item"><span>04</span> draw bead or component-level check</div></div></div>
+          <div class="topic-resource-feed" id="simulationResearchFeed"></div>
+        </section>
+
+        <section class="slide" data-slide="8">
+          <div class="eyebrow">09 — INTERACTIVE TOOL</div>
+          <div class="slide-heading"><div><h2>Interactive Tool</h2><p>Open one of the focused tools in a new browser window and return here when you are finished.</p></div><div class="tag">external tools</div></div>
+          <div class="interactive-tools-grid">
+            <a class="interactive-tool-link" href="carregamento_reverso.html" target="_blank" rel="noopener noreferrer"><span>a)</span><strong>Reverse Loading</strong><em>open tool ↗</em></a>
+            <a class="interactive-tool-link" href="leis_de_encruamento.html" target="_blank" rel="noopener noreferrer"><span>b)</span><strong>Work-hardening laws</strong><em>open tool ↗</em></a>
+            <a class="interactive-tool-link" href="superf_cies_de_escoamento.html" target="_blank" rel="noopener noreferrer"><span>c)</span><strong>Yield Surfaces</strong><em>open tool ↗</em></a>
+            <a class="interactive-tool-link" href="diagrama_flc_fld.html" target="_blank" rel="noopener noreferrer"><span>d)</span><strong>FLC/FLD</strong><em>open tool ↗</em></a>
+          </div>
+        </section>
+
+        <footer class="stage-footer"><span id="chapterTitle">Why formability?</span><span>METAL FORMABILITY / 2026</span><span><button class="nav-button" id="prevButton">←</button><button class="nav-button" id="nextButton">→</button></span></footer>
+      </section>
+    </div>
+  </main>
+  <script src="app.js"></script>
+  <div class="resource-modal" id="resourceModal" aria-hidden="true"><div class="resource-modal-backdrop" data-close-resource></div><section class="resource-modal-card" role="dialog" aria-modal="true" aria-labelledby="resourceModalTitle"><button class="resource-modal-close" data-close-resource aria-label="Close resource">×</button><img id="resourceModalImage" alt=""><div class="resource-modal-body"><div class="panel-kicker" id="resourceModalType">linked investigation</div><h2 id="resourceModalTitle"></h2><p id="resourceModalText"></p><div class="resource-modal-note" id="resourceModalNote"></div><div class="video-link-option" id="videoLinkOption" hidden><input id="videoLinkText" type="text" readonly aria-label="YouTube video link"><button class="resource-copy-button" id="copyVideoLink" type="button">Copiar link do YouTube</button></div><a class="resource-open-button" id="resourceModalLink" href="#" target="_blank" rel="noopener noreferrer">Open source ↗</a><a class="resource-fallback-link" id="resourceModalFallback" href="#" target="_blank" rel="noopener noreferrer" hidden>Open source ↗</a><div id="resourceAdditionalLinks" hidden></div></div></section></div><script>document.querySelectorAll('[data-close-resource]').forEach(button=>button.addEventListener('click',closeResource));document.addEventListener('keydown',event=>{if(event.key==='Escape')closeResource()});</script>
+</body>
+</html>

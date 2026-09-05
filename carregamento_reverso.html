@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregamento Reverso e Efeito Bauschinger</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 p-4 md:p-6 font-sans">
+    <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden flex flex-col lg:flex-row">
+        
+        <!-- Sidebar Controles -->
+        <div class="w-full lg:w-1/3 bg-gray-100 p-6 border-r border-gray-200 overflow-y-auto lg:max-h-[900px]">
+            <h2 class="text-2xl font-bold text-blue-800 mb-2">Plasticidade Cíclica</h2>
+            <p class="text-sm text-gray-600 mb-6">
+                Simulação 1D baseada no mapeamento de retorno elasto-plástico, demonstrando os princípios que fundamentam os modelos de <strong>Yoshida-Uemori</strong> e Chaboche.
+            </p>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Deformação de Reversão (&epsilon;<sub>max</sub>)</label>
+                    <input type="range" id="eMax" min="0.02" max="0.15" step="0.01" value="0.08" class="w-full accent-blue-600">
+                    <div class="text-right text-sm font-mono text-gray-700"><span id="eMaxVal">0.08</span> m/m</div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                    <h3 class="font-bold text-sm text-gray-800 mb-3 border-b pb-1">Parâmetros de Ajuste</h3>
+                    
+                    <label class="block text-xs font-semibold mt-2">Escoamento Inicial (Y) [<span id="yVal">200</span> MPa]</label>
+                    <input type="range" id="valY" min="100" max="400" step="10" value="200" class="w-full">
+                    
+                    <label class="block text-xs font-semibold mt-4 text-red-700">Módulo Cinemático (C) - Translado [<span id="cVal">25000</span>]</label>
+                    <input type="range" id="valC" min="0" max="50000" step="1000" value="25000" class="w-full accent-red-600">
+                    
+                    <label class="block text-xs font-semibold mt-3 text-red-700">Relaxação Cinemática (&gamma;) [<span id="gVal">200</span>]</label>
+                    <input type="range" id="valG" min="50" max="500" step="10" value="200" class="w-full accent-red-600">
+                    
+                    <label class="block text-xs font-semibold mt-4 text-blue-700">Expansão Isotrópica Max (R<sub>max</sub>) [<span id="rMaxVal">100</span> MPa]</label>
+                    <input type="range" id="valRmax" min="0" max="300" step="10" value="100" class="w-full accent-blue-600">
+                    
+                    <label class="block text-xs font-semibold mt-3 text-blue-700">Taxa Isotrópica (b) [<span id="bVal">15</span>]</label>
+                    <input type="range" id="valB" min="1" max="50" step="1" value="15" class="w-full accent-blue-600">
+                </div>
+            </div>
+            
+            <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-xs text-yellow-800">
+                <strong>Dica de uso:</strong> Zere o "Módulo Cinemático (C)" e aumente apenas o Isotrópico para ver uma curva sem efeito Bauschinger. Em seguida, reverta isso para ver o efeito Bauschinger extremo.
+            </div>
+        </div>
+
+        <!-- Área Principal: Gráfico + Teoria e Análise -->
+        <div class="w-full lg:w-2/3 p-6 flex flex-col bg-white overflow-y-auto lg:max-h-[900px]">
+            <div id="plotDiv" class="w-full h-[400px]"></div>
+
+            <!-- Divisor -->
+            <hr class="my-6 border-gray-200">
+
+            <!-- Teoria e Análise -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Painel de Teoria -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        Teoria e Fundamentos
+                    </h3>
+                    <div class="text-sm text-gray-700 space-y-3 leading-relaxed">
+                        <p>O <strong>Efeito Bauschinger</strong> é a redução dramática do limite de escoamento em compressão após a chapa ter sofrido tração (ou vice-versa). Isso é crítico na previsão do <em>springback</em> em estampagem.</p>
+                        <p><strong>Encruamento Cinemático (C, &gamma;):</strong> Modela o movimento (translado) do centro da superfície de escoamento, representado pela variável interna <em>Backstress</em> (&alpha;). É ele o responsável pelo escoamento prematuro na reversão.</p>
+                        <p><strong>Encruamento Isotrópico (Rmax, b):</strong> Modela o inchaço (expansão) homogêneo da superfície, ditado pela variável $R$.</p>
+                        <p class="bg-blue-50 p-2 rounded border border-blue-100"><strong>Yoshida-Uemori (Y-U):</strong> O modelo Y-U avança ao acoplar essas regras matemáticas clássicas usando duas superfícies (escoamento e contorno). Ele captura o amolecimento transiente (curva vermelha arredondada) e a estagnação do encruamento isotrópico após a reversão de forma mais precisa que modelos simples.</p>
+                    </div>
+                </div>
+
+                <!-- Miniatura / Análise Visual -->
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        Mecânica no Ponto de Reversão
+                    </h3>
+                    <p class="text-xs text-gray-600 mb-4">A barra abaixo ilustra fisicamente como estava a Superfície de Escoamento 1D no exato instante em que o carregamento mudou de tração para compressão.</p>
+                    
+                    <!-- Diagrama 1D da Superfície de Escoamento -->
+                    <div class="relative w-full h-16 bg-white border border-gray-300 rounded overflow-hidden">
+                        <!-- Marcadores do eixo X -->
+                        <div class="absolute w-full top-0 flex justify-between px-1 text-[10px] text-gray-400 mt-1">
+                            <span>-500 MPa</span>
+                            <span>0</span>
+                            <span>+500 MPa</span>
+                        </div>
+                        
+                        <!-- Linha central Zero -->
+                        <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-black z-10 border-l border-dashed border-gray-400"></div>
+                        
+                        <!-- Superfície Original (Y) -->
+                        <div id="origSurface" class="absolute top-5 h-2 bg-gray-300 rounded opacity-50" title="Superfície Original"></div>
+                        
+                        <!-- Superfície Transladada/Expandida -->
+                        <div id="currSurface" class="absolute top-8 h-6 bg-red-200 border-2 border-red-500 opacity-80 flex items-center justify-center text-[10px] font-bold text-red-800" title="Superfície Movida e Expandida"></div>
+                        
+                        <!-- Ponto Backstress (Alpha) -->
+                        <div id="alphaMarker" class="absolute top-8 h-6 w-1 bg-blue-700 z-20" title="Backstress (&alpha;)"></div>
+                    </div>
+
+                    <div class="mt-4 grid grid-cols-2 gap-2 text-xs font-mono">
+                        <div class="bg-white p-2 border rounded"><span class="block text-gray-500 font-sans font-bold">Max Tração atingida:</span> <span id="outSigMax" class="text-blue-700">0</span> MPa</div>
+                        <div class="bg-white p-2 border rounded"><span class="block text-gray-500 font-sans font-bold">Re-escoamento (Comp):</span> <span id="outSigRev" class="text-red-700">0</span> MPa</div>
+                        <div class="bg-white p-2 border rounded col-span-2 text-center bg-red-50"><span class="text-gray-600 font-sans font-bold">Queda de Bauschinger: </span> <span id="outBauschDrop" class="text-red-600 font-bold text-sm">0</span> MPa</div>
+                        
+                        <div class="col-span-2 text-[10px] text-gray-500 mt-2 text-center font-sans">
+                            * Backstress transladou o centro em <strong id="outAlpha" class="text-blue-600">0</strong> MPa e o raio expandiu para <strong id="outRadius" class="text-green-600">0</strong> MPa.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updatePlot() {
+            // Obter Variáveis
+            const eMax = parseFloat(document.getElementById('eMax').value); document.getElementById('eMaxVal').innerText = eMax;
+            const Y = parseFloat(document.getElementById('valY').value); document.getElementById('yVal').innerText = Y;
+            const C = parseFloat(document.getElementById('valC').value); document.getElementById('cVal').innerText = C;
+            const gamma = parseFloat(document.getElementById('valG').value); document.getElementById('gVal').innerText = gamma;
+            const Rmax = parseFloat(document.getElementById('valRmax').value); document.getElementById('rMaxVal').innerText = Rmax;
+            const b = parseFloat(document.getElementById('valB').value); document.getElementById('bVal').innerText = b;
+
+            const E = 200000; // Módulo de Young [MPa] do Aço
+            
+            // Gerar Caminho de Deformação
+            const strain_path = [];
+            const steps_fwd = 150;
+            const steps_rev = 300;
+            
+            for(let i=0; i<=steps_fwd; i++) {
+                strain_path.push( (i/steps_fwd) * eMax );
+            }
+            for(let i=1; i<=steps_rev; i++) {
+                strain_path.push( eMax - (i/steps_rev) * (eMax * 2) );
+            }
+
+            // Variáveis de Estado (Mapeamento de Retorno)
+            let current_eps = 0;
+            let sig = 0;
+            let ep = 0; 
+            let alpha = 0; 
+            let R = 0; 
+
+            const plot_eps = [];
+            const plot_sig = [];
+
+            // Variáveis para a Análise Didática
+            let sig_max_fwd = 0;
+            let alpha_at_rev = 0;
+            let R_at_rev = 0;
+            let yield_rev_stress = null;
+
+            // Integração Numérica
+            for(let step = 0; step < strain_path.length; step++) {
+                let e = strain_path[step];
+                
+                // Tensão tentativa elástica
+                let sig_tr = sig + E * (e - current_eps);
+                
+                // Função de escoamento tentativa
+                let f_tr = Math.abs(sig_tr - alpha) - (Y + R);
+
+                if (f_tr <= 0) {
+                    // Passo puramente elástico
+                    sig = sig_tr;
+                } else {
+                    // Passo elasto-plástico
+                    let sign = Math.sign(sig_tr - alpha);
+                    let H_kin = C - gamma * alpha * sign;
+                    let H_iso = b * (Rmax - R);
+                    
+                    let d_ep = f_tr / (E + H_kin + H_iso);
+                    
+                    ep += d_ep;
+                    alpha += (C * sign - gamma * alpha) * d_ep;
+                    R += b * (Rmax - R) * d_ep;
+                    
+                    sig = sig_tr - E * d_ep * sign;
+                    
+                    // Detectar o ponto de re-escoamento na fase de reversão
+                    if (step > steps_fwd && yield_rev_stress === null) {
+                        yield_rev_stress = sig;
+                    }
+                }
+                
+                current_eps = e;
+                plot_eps.push(current_eps);
+                plot_sig.push(sig);
+
+                // Capturar o estado exato no momento de reversão máxima
+                if (step === steps_fwd) {
+                    sig_max_fwd = sig;
+                    alpha_at_rev = alpha;
+                    R_at_rev = R;
+                }
+            }
+
+            // Separar traços
+            const fwd_eps = plot_eps.slice(0, steps_fwd+1);
+            const fwd_sig = plot_sig.slice(0, steps_fwd+1);
+            const rev_eps = plot_eps.slice(steps_fwd+1);
+            const rev_sig = plot_sig.slice(steps_fwd+1);
+
+            const traceFwd = {
+                x: fwd_eps, y: fwd_sig,
+                mode: 'lines', name: 'Tração',
+                line: {color: '#2563eb', width: 3}
+            };
+
+            const traceRev = {
+                x: [fwd_eps[fwd_eps.length-1], ...rev_eps], 
+                y: [fwd_sig[fwd_sig.length-1], ...rev_sig],
+                mode: 'lines', name: 'Reversão (Efeito Bauschinger)',
+                line: {color: '#ef4444', width: 3}
+            };
+
+            const layout = {
+                title: 'Curva Tensão-Deformação Cíclica',
+                xaxis: {title: 'Deformação Verdadeira (&epsilon;)', zeroline: true, zerolinewidth: 1, zerolinecolor: '#cbd5e1'},
+                yaxis: {title: 'Tensão (&sigma;) [MPa]', zeroline: true, zerolinewidth: 1, zerolinecolor: '#cbd5e1'},
+                showlegend: true,
+                // Legenda configurada para ficar legível fora da área de colisão do gráfico
+                legend: {orientation: 'h', x: 0.5, y: -0.2, xanchor: 'center'},
+                margin: {t: 40, l: 60, r: 20, b: 60}
+            };
+
+            Plotly.newPlot('plotDiv', [traceFwd, traceRev], layout, {responsive: true});
+
+            // Atualizar Painel de Análise
+            document.getElementById('outSigMax').innerText = sig_max_fwd.toFixed(1);
+            
+            // Se não escoar na reversão, colocar como N/A
+            if(yield_rev_stress === null) yield_rev_stress = plot_sig[plot_sig.length-1]; 
+            document.getElementById('outSigRev').innerText = yield_rev_stress.toFixed(1);
+            
+            // Queda Bauschinger: Tensão Ideal de Compressão ( -Sig_Max ) menos a Tensão Real de Escoamento Reverso
+            let bausch_drop = Math.abs(-sig_max_fwd - yield_rev_stress);
+            document.getElementById('outBauschDrop').innerText = bausch_drop.toFixed(1);
+
+            document.getElementById('outAlpha').innerText = alpha_at_rev.toFixed(1);
+            document.getElementById('outRadius').innerText = (Y + R_at_rev).toFixed(1);
+
+            // Atualizar Miniatura 1D (Escala: -500 a 500 MPa -> Total 1000)
+            const MAX_SCALE = 500;
+            const TOTAL_RANGE = MAX_SCALE * 2;
+            
+            const calcLeftPct = (val) => Math.max(0, Math.min(100, ((val + MAX_SCALE) / TOTAL_RANGE) * 100));
+            const calcWidthPct = (width) => Math.min(100, (width / TOTAL_RANGE) * 100);
+
+            // 1. Superfície Original (Centro 0, Raio Y)
+            let origLeft = calcLeftPct(-Y);
+            let origWidth = calcWidthPct(Y * 2);
+            let elOrig = document.getElementById('origSurface');
+            elOrig.style.left = origLeft + '%';
+            elOrig.style.width = origWidth + '%';
+
+            // 2. Superfície Atual na Reversão (Centro alpha, Raio Y+R)
+            let currRadius = Y + R_at_rev;
+            let currLeft = calcLeftPct(alpha_at_rev - currRadius);
+            let currWidth = calcWidthPct(currRadius * 2);
+            let elCurr = document.getElementById('currSurface');
+            elCurr.style.left = currLeft + '%';
+            elCurr.style.width = currWidth + '%';
+            elCurr.innerText = `2×(${currRadius.toFixed(0)})`;
+
+            // 3. Marcador Alpha (Backstress)
+            let alphaPos = calcLeftPct(alpha_at_rev);
+            document.getElementById('alphaMarker').style.left = alphaPos + '%';
+        }
+
+        // Listeners
+        const inputs = ['eMax', 'valY', 'valC', 'valG', 'valRmax', 'valB'];
+        inputs.forEach(id => document.getElementById(id).addEventListener('input', updatePlot));
+
+        // Start
+        updatePlot();
+    </script>
+</body>
+</html>

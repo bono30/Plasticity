@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama FLC/FLD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 p-4 md:p-8">
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
+        
+        <!-- Sidebar Controles -->
+        <div class="w-full md:w-1/3 bg-gray-100 p-6 border-r border-gray-200">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">Análise FLC/FLD</h2>
+            <p class="text-sm text-gray-600 mb-6">
+                A Curva Limite de Conformabilidade (FLC) separa a região de deformação segura da região de falha (estricção/ruptura). Ajuste as deformações para avaliar o estado da chapa.
+            </p>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Deformação Principal Maior (&epsilon;<sub>1</sub>)</label>
+                    <input type="range" id="e1Slider" min="0" max="0.8" step="0.01" value="0.15" class="w-full accent-blue-600">
+                    <div class="text-right text-sm font-mono text-blue-700" id="e1Val">0.15</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Deformação Principal Menor (&epsilon;<sub>2</sub>)</label>
+                    <input type="range" id="e2Slider" min="-0.4" max="0.4" step="0.01" value="-0.1" class="w-full accent-blue-600">
+                    <div class="text-right text-sm font-mono text-blue-700" id="e2Val">-0.10</div>
+                </div>
+            </div>
+
+            <div class="mt-8 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Diagnóstico do Ponto</h3>
+                <p class="text-sm"><strong>Estado:</strong> <span id="statusText" class="font-bold"></span></p>
+                <p class="text-sm mt-2"><strong>Modo de Deformação:</strong> <span id="modeText" class="text-indigo-600 font-semibold"></span></p>
+            </div>
+            
+            <div class="mt-4 text-xs text-gray-500">
+                <em>* Curva FLC didática (aproximação teórica de Keeler-Goodwin). &epsilon;<sub>0</sub> = 0.20.</em>
+            </div>
+        </div>
+
+        <!-- Área do Gráfico -->
+        <div class="w-full md:w-2/3 p-6 flex flex-col">
+            <div id="plotDiv" class="flex-grow w-full h-[500px]"></div>
+        </div>
+    </div>
+
+    <script>
+        // Parâmetros da curva FLC base
+        const FLC0 = 0.20;
+        const e2_left = []; const e1_left = [];
+        const e2_right = []; const e1_right = [];
+        
+        // Gerar curva limite
+        for(let e2 = -0.4; e2 <= 0; e2 += 0.01) {
+            e2_left.push(e2);
+            e1_left.push(FLC0 - e2); // Inclinação -1
+        }
+        for(let e2 = 0; e2 <= 0.4; e2 += 0.01) {
+            e2_right.push(e2);
+            e1_right.push(FLC0 + 0.5 * e2); // Inclinação positiva empírica
+        }
+        const FLC_e2 = e2_left.concat(e2_right.slice(1));
+        const FLC_e1 = e1_left.concat(e1_right.slice(1));
+
+        function updatePlot() {
+            const e1 = parseFloat(document.getElementById('e1Slider').value);
+            const e2 = parseFloat(document.getElementById('e2Slider').value);
+            
+            document.getElementById('e1Val').innerText = e1.toFixed(2);
+            document.getElementById('e2Val').innerText = e2.toFixed(2);
+
+            // Calcular limite para a coordenada e2 atual
+            let limit_e1 = 0;
+            if (e2 < 0) limit_e1 = FLC0 - e2;
+            else limit_e1 = FLC0 + 0.5 * e2;
+
+            // Determinar Status
+            const statusEl = document.getElementById('statusText');
+            if (e1 > limit_e1) {
+                statusEl.innerText = "FALHA (Estricção/Ruptura)";
+                statusEl.className = "font-bold text-red-600";
+            } else if (e1 < -e2) {
+                statusEl.innerText = "ENRUGAMENTO (Compressão severa)";
+                statusEl.className = "font-bold text-orange-500";
+            } else {
+                statusEl.innerText = "SEGURO (Conformável)";
+                statusEl.className = "font-bold text-green-600";
+            }
+
+            // Determinar Modo
+            const modeEl = document.getElementById('modeText');
+            if (e2 < -0.05) modeEl.innerText = "Estampagem Profunda (Drawing)";
+            else if (e2 > 0.05) modeEl.innerText = "Estiramento Biaxial (Biaxial Stretching)";
+            else modeEl.innerText = "Deformação Plana (Plane Strain)";
+
+            const traceFLC = {
+                x: FLC_e2, y: FLC_e1,
+                mode: 'lines', name: 'FLC',
+                line: {color: 'black', width: 3}
+            };
+
+            const tracePoint = {
+                x: [e2], y: [e1],
+                mode: 'markers', name: 'Estado de Deformação',
+                marker: {size: 14, color: (e1 > limit_e1) ? 'red' : ((e1 < -e2) ? 'orange' : 'green'), symbol: 'diamond'}
+            };
+
+            // Linha de enrugamento (e1 = -e2 para e2 < 0)
+            const traceWrinkle = {
+                x: [-0.4, 0], y: [0.4, 0],
+                mode: 'lines', name: 'Limite Enrugamento',
+                line: {color: 'orange', width: 2, dash: 'dash'}
+            };
+
+            const layout = {
+                title: 'Diagrama Limite de Conformação (FLD)',
+                xaxis: {title: 'Deformação Principal Menor (&epsilon;<sub>2</sub>)', range: [-0.45, 0.45], zeroline: true},
+                yaxis: {title: 'Deformação Principal Maior (&epsilon;<sub>1</sub>)', range: [-0.1, 0.9]},
+                showlegend: true,
+                legend: {x: 0.05, y: 0.95},
+                margin: {t: 50, l: 60, r: 20, b: 50}
+            };
+
+            Plotly.newPlot('plotDiv', [traceFLC, traceWrinkle, tracePoint], layout, {responsive: true});
+        }
+
+        document.getElementById('e1Slider').addEventListener('input', updatePlot);
+        document.getElementById('e2Slider').addEventListener('input', updatePlot);
+
+        // Init
+        updatePlot();
+    </script>
+</body>
+</html>

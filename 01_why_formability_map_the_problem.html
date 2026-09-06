@@ -44,9 +44,14 @@
         .flip-card.card-one .flip-card-back { display: none; }
         .flip-card.card-one.flipped .flip-card-front { display: none !important; }
         .flip-card.card-one.flipped .flip-card-back { display: flex !important; }
-        .card-one-answer { display: none; }
+        .card-one-answer { display: none !important; }
         .card-one.show-answer .card-one-question { display: none; }
-        .card-one.show-answer .card-one-answer { display: flex; }
+        .card-one.show-answer .card-one-answer { display: flex !important; }
+        .card-one-answer-scroll { max-height: 300px; overflow-y: auto; padding-right: 8px; }
+        .card-one-answer-scroll p { margin: 0 0 10px; }
+        .card-one-answer-heading { color: #38bdf8; font-weight: 600; margin-top: 12px !important; }
+        .card-one-answer-scroll ul { margin: 0 0 10px; padding-left: 18px; }
+        .card-one-answer-scroll li { margin-bottom: 6px; }
         
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
@@ -243,15 +248,22 @@
                         <div class="flex gap-4 items-start">
                             <span class="text-[#f97316] font-mono text-sm">01</span>
                             <div>
-                                <h4 class="text-white font-semibold text-sm mb-1">Conformability</h4>
-                                <p class="text-gray-400 text-xs leading-tight line-clamp-2">Can the blank acquire the required geometry under tool kinematics, friction, and BHF?</p>
+                                <h4 class="text-white font-semibold text-sm mb-1">What determines the formability of steel sheets during metal forming?</h4>
+                                <p class="text-gray-400 text-xs leading-tight">Click to reveal the answer.</p>
                             </div>
                         </div>
                         <div class="absolute top-2 right-2 text-gray-600 group-hover:text-[#38bdf8] text-xs transition-colors">⟳</div>
                     </div>
                     <div class="card-one-answer border border-[#38bdf8]/30 bg-[#38bdf8]/5 p-5 flex flex-col rounded-sm">
-                        <h4 class="text-[#38bdf8] font-semibold text-sm mb-1">Conformability</h4>
-                        <p class="text-slate-300 text-xs leading-tight">Relates to sheet-tooling interaction. Even highly formable material fails if friction is excessive, BHF is wrong (wrinkling/tearing), or die radii prevent desired shape.</p>
+                        <h4 class="text-[#38bdf8] font-semibold text-sm mb-3">Answer</h4>
+                        <div class="card-one-answer-scroll text-slate-300 text-xs leading-relaxed">
+                            <p><strong>Formability is not determined by a single property; it depends on both material and process variables.</strong></p>
+                            <p class="card-one-answer-heading">Material variables:</p>
+                            <ul><li><strong>Yield strength:</strong> higher generally means lower formability.</li><li><strong>Uniform elongation:</strong> higher means greater ability to deform before necking.</li><li><strong>Strain-hardening exponent (n):</strong> higher means better resistance to localized necking and higher formability.</li><li><strong>Plastic strain ratio (r-value):</strong> higher means better resistance to thinning, especially in deep drawing.</li><li><strong>Anisotropy:</strong> greater directional differences can cause uneven deformation and affect formability.</li></ul>
+                            <p class="card-one-answer-heading">Process variables:</p>
+                            <ul><li><strong>Blank-holder force:</strong> increasing it can reduce wrinkling, but excessive force increases tensile stresses and may cause tearing.</li><li><strong>Friction:</strong> increasing friction generally restricts material flow and increases the risk of failure.</li><li><strong>Forming speed:</strong> increasing speed can alter deformation behavior and may increase or decrease formability depending on the material.</li><li><strong>Tool geometry:</strong> larger punch and die radii generally reduce localized strains and improve formability.</li></ul>
+                            <p><strong>Therefore, the formability of a steel sheet results from the interaction between its intrinsic properties and the conditions under which it is formed.</strong></p>
+                        </div>
                     </div>
             </div>
 

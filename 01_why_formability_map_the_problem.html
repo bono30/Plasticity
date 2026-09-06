@@ -35,6 +35,8 @@
         .flip-card-back {
             transform: rotateY(180deg);
         }
+        .flip-card:not(.flipped) .flip-card-back { display: none; }
+        .flip-card.flipped .flip-card-front { display: none; }
         
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }

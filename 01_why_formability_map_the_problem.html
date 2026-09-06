@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formability Interactive Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0c10;
+            color: #cbd5e1;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Flip Card CSS */
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0c10; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+        /* Sliders CSS */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: currentColor;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 10px currentColor;
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #374151;
+            border-radius: 2px;
+        }
+        .slider-orange::-webkit-slider-thumb { color: #f97316; }
+        .slider-blue::-webkit-slider-thumb { color: #38bdf8; }
+    </style>
+</head>
+<body class="p-6 flex flex-col gap-6">
+
+    <header class="flex gap-6 shrink-0 h-[45%] min-h-[360px]">
+        
+        <!-- Left: Schematic Area -->
+        <div class="flex-1 flex flex-col min-w-0 border border-gray-800 bg-[#111415] rounded-sm relative shadow-inner overflow-hidden">
+            <div class="absolute top-4 left-4 text-[#f97316] text-xs font-mono uppercase tracking-widest z-20 bg-[#111415]/80 px-2 py-1 rounded backdrop-blur-sm">
+                Cross-Sectional Schematic (Deep Drawing)
+            </div>
+            
+            <div id="svgContainer" class="w-full h-full relative z-10 flex items-center justify-center pt-8">
+                <!-- SVG will be dynamically injected here -->
+            </div>
+        </div>
+
+        <!-- Right: Definitions -->
+        <div class="w-[420px] shrink-0 flex flex-col gap-4">
+            <div class="mb-2 shrink-0">
+                <h1 class="text-4xl font-bold text-white mb-2 tracking-tight leading-none">
+                    What is <span class="text-[#4ade80]">metal forming</span><br />
+                    <span class="text-[#4ade80]">formability?</span>
+                </h1>
+                <p class="text-[13px] text-slate-400 leading-relaxed mt-3">
+                    Formability is the ability of a material to undergo the deformation demanded by a 
+                    manufacturing process while remaining free of unacceptable defects.
+                </p>
+            </div>
+
+            <div class="border border-gray-800 bg-[#161a1d] p-5 rounded-sm flex-1 flex flex-col justify-center">
+                <div class="text-[#f97316] text-[10px] font-mono uppercase tracking-widest mb-2">
+                    Operational Definition (Process)
+                </div>
+                <div class="text-[#4ade80] font-mono text-[12px] mb-2 leading-tight">
+                    F = { process parameters | flow is stable & part meets spec }
+                </div>
+                <p class="text-[11px] text-gray-400 leading-relaxed">
+                    Dependent on external conditions: tool kinematics, blank-holder force (BHF), friction (lubrication), punch radius, die radius, and drawing speed. It defines the "Process Window".
+                </p>
+            </div>
+
+            <div class="border border-gray-800 bg-[#161a1d] p-5 rounded-sm flex-1 flex flex-col justify-center">
+                <div class="text-[#38bdf8] text-[10px] font-mono uppercase tracking-widest mb-2">
+                    Intrinsic Definition (Material)
+                </div>
+                <div class="text-[#38bdf8] font-mono text-[12px] mb-2 leading-tight">
+                    M = { material properties | sustains strain w/o localization }
+                </div>
+                <p class="text-[11px] text-gray-400 leading-relaxed">
+                    Inherent capabilities dictated by: strain hardening exponent (n-value, limits necking), normal anisotropy (r-value, aids deep drawing), yield strength, and microstructure.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex gap-6 flex-1 min-h-0 pb-2">
+        <!-- Main Interactive Area -->
+        <div class="flex-grow border border-gray-700 bg-[#161a1d] p-6 relative flex flex-col rounded-sm shadow-lg overflow-y-auto">
+            
+            <div class="flex justify-between items-center mb-6 shrink-0">
+                <div>
+                    <h3 class="text-white font-semibold flex items-center gap-2">
+                        <span class="border border-gray-500 rounded-full w-5 h-5 flex items-center justify-center text-xs">i</span>
+                        Interactive Deep Drawing Analysis
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-1">
+                        Adjust parameters to observe their effect on the Drawing Ratio (&beta;) vs Limiting Drawing Ratio (LDR).
+                    </p>
+                </div>
+                <button id="runBtn" class="bg-[#374151] hover:bg-[#4b5563] text-white px-6 py-2 rounded-sm text-sm font-semibold transition-colors flex items-center gap-2 border border-gray-600 shadow-md">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <span>Run Simulation</span>
+                </button>
+            </div>
+
+            <div class="flex gap-4 mb-6 shrink-0">
+                <!-- Diameters -->
+                <div class="flex-1 border border-gray-800 p-4 rounded-sm bg-[#111415]">
+                    <div class="text-[#f97316] text-[10px] font-mono uppercase tracking-widest mb-4">Diameters</div>
+                    <div class="mb-5">
+                        <div class="flex justify-between text-xs mb-2">
+                            <label class="text-gray-300">Blank Dia. (D₀)</label>
+                            <span class="font-mono text-white bg-gray-800 px-2 py-0.5 rounded" id="valD0">88 mm</span>
+                        </div>
+                        <input type="range" id="inpD0" min="60" max="130" value="88" class="slider-orange" />
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-2">
+                            <label class="text-gray-300">Punch Dia. (dₚ)</label>
+                            <span class="font-mono text-white bg-gray-800 px-2 py-0.5 rounded" id="valDp">50 mm</span>
+                        </div>
+                        <input type="range" id="inpDp" min="30" max="75" value="50" class="slider-orange" />
+                    </div>
+                </div>
+
+                <!-- Tool Radii -->
+                <div class="flex-1 border border-gray-800 p-4 rounded-sm bg-[#111415]">
+                    <div class="text-[#f97316] text-[10px] font-mono uppercase tracking-widest mb-4">Tool Radii</div>
+                    <div class="mb-5">
+                        <div class="flex justify-between text-xs mb-2">
+                            <label class="text-gray-300">Die Radius (R<sub>d</sub>)</label>
+                            <span class="font-mono text-white bg-gray-800 px-2 py-0.5 rounded" id="valRd">10 mm</span>
+                        </div>
+                        <input type="range" id="inpRd" min="4" max="18" value="10" class="slider-orange" />
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-2">
+                            <label class="text-gray-300">Punch Radius (R<sub>p</sub>)</label>
+                            <span class="font-mono text-white bg-gray-800 px-2 py-0.5 rounded" id="valRp">8 mm</span>
+                        </div>
+                        <input type="range" id="inpRp" min="4" max="18" value="8" class="slider-orange" />
+                    </div>
+                </div>
+
+                <!-- Material Properties -->
+                <div class="flex-1 border border-gray-800 p-4 rounded-sm bg-[#111415]">
+                    <div class="text-[#38bdf8] text-[10px] font-mono uppercase tracking-widest mb-4">Material Properties</div>
+                    <div class="mb-5">
+                        <div class="flex justify-between text-xs mb-2">
+                            <label class="text-gray-300">Normal Anisotropy (r-value)</label>
+                            <span class="font-mono text-white bg-gray-800 px-2 py-0.5 rounded" id="valR">1.20</span>
+                        </div>
+                        <input type="range" id="inpR" min="0.5" max="2.5" step="0.1" value="1.2" class="slider-blue" />
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-2">
+                            <label class="text-gray-300">Strain Hardening (n-value)</label>
+                            <span class="font-mono text-white bg-gray-800 px-2 py-0.5 rounded" id="valN">0.22</span>
+                        </div>
+                        <input type="range" id="inpN" min="0.05" max="0.4" step="0.01" value="0.22" class="slider-blue" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gauges -->
+            <div class="mt-auto flex flex-col items-center justify-center border-t border-gray-800 pt-5 relative w-full shrink-0">
+                <div class="flex w-full justify-around items-center">
+                    <div class="text-center w-1/3">
+                        <div class="text-gray-500 text-[10px] uppercase tracking-widest mb-2">Current Ratio (&beta;)</div>
+                        <div id="outBeta" class="text-5xl font-mono text-[#4ade80] drop-shadow-md">1.76</div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center justify-center w-1/3" id="statusBadgeContainer">
+                        <!-- Injected by JS -->
+                    </div>
+
+                    <div class="text-center w-1/3 border-l border-gray-800">
+                        <div class="text-gray-500 text-[10px] uppercase tracking-widest mb-2">Est. Limit (LDR)</div>
+                        <div id="outLDR" class="text-5xl font-mono text-white drop-shadow-md">2.01</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-[420px] shrink-0 flex flex-col gap-4 overflow-y-auto pr-2">
+            <!-- Card 1 -->
+            <div class="flip-card relative w-full h-[100px] cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner w-full h-full relative shadow-md">
+                    <div class="flip-card-front absolute w-full h-full border border-gray-800 bg-[#161a1d] p-5 flex flex-col rounded-sm hover:border-gray-600 transition-colors">
+                        <div class="flex gap-4 items-start">
+                            <span class="text-[#f97316] font-mono text-sm">01</span>
+                            <div>
+                                <h4 class="text-white font-semibold text-sm mb-1">Conformability</h4>
+                                <p class="text-gray-400 text-xs leading-tight line-clamp-2">Can the blank acquire the required geometry under tool kinematics, friction, and BHF?</p>
+                            </div>
+                        </div>
+                        <div class="absolute top-2 right-2 text-gray-600 group-hover:text-[#38bdf8] text-xs transition-colors">⟳</div>
+                    </div>
+                    <div class="flip-card-back absolute w-full h-full border border-[#38bdf8]/30 bg-[#38bdf8]/5 p-5 flex flex-col rounded-sm overflow-hidden">
+                        <h4 class="text-[#38bdf8] font-semibold text-sm mb-1">Conformability</h4>
+                        <p class="text-slate-300 text-xs leading-tight">Relates to sheet-tooling interaction. Even highly formable material fails if friction is excessive, BHF is wrong (wrinkling/tearing), or die radii prevent desired shape.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="flip-card relative w-full h-[100px] cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner w-full h-full relative shadow-md">
+                    <div class="flip-card-front absolute w-full h-full border border-gray-800 bg-[#161a1d] p-5 flex flex-col rounded-sm hover:border-gray-600 transition-colors">
+                        <div class="flex gap-4 items-start">
+                            <span class="text-[#f97316] font-mono text-sm">02</span>
+                            <div>
+                                <h4 class="text-white font-semibold text-sm mb-1">Formability</h4>
+                                <p class="text-gray-400 text-xs leading-tight line-clamp-2">Can it reach required strains without diffuse necking, localized necking, or fracture?</p>
+                            </div>
+                        </div>
+                        <div class="absolute top-2 right-2 text-gray-600 group-hover:text-[#38bdf8] text-xs transition-colors">⟳</div>
+                    </div>
+                    <div class="flip-card-back absolute w-full h-full border border-[#38bdf8]/30 bg-[#38bdf8]/5 p-5 flex flex-col rounded-sm overflow-hidden">
+                        <h4 class="text-[#38bdf8] font-semibold text-sm mb-1">Formability</h4>
+                        <p class="text-slate-300 text-xs leading-tight">The intrinsic limit. How much plastic strain metal endures before failure. Often mapped via Forming Limit Diagram (FLD) charting safe major/minor strains.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="flip-card relative w-full h-[100px] cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner w-full h-full relative shadow-md">
+                    <div class="flip-card-front absolute w-full h-full border border-gray-800 bg-[#161a1d] p-5 flex flex-col rounded-sm hover:border-gray-600 transition-colors">
+                        <div class="flex gap-4 items-start">
+                            <span class="text-[#f97316] font-mono text-sm">03</span>
+                            <div>
+                                <h4 class="text-white font-semibold text-sm mb-1">Process Window</h4>
+                                <p class="text-gray-400 text-xs leading-tight line-clamp-2">Which combinations of radius, lubrication, speed, and force produce an acceptable part?</p>
+                            </div>
+                        </div>
+                        <div class="absolute top-2 right-2 text-gray-600 group-hover:text-[#38bdf8] text-xs transition-colors">⟳</div>
+                    </div>
+                    <div class="flip-card-back absolute w-full h-full border border-[#38bdf8]/30 bg-[#38bdf8]/5 p-5 flex flex-col rounded-sm overflow-hidden">
+                        <h4 class="text-[#38bdf8] font-semibold text-sm mb-1">Process Window</h4>
+                        <p class="text-slate-300 text-xs leading-tight">The 'safe zone'. By mapping material limits against process variables, engineers find a robust window where minor variations won't cause scrap.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Central State Object
+        const state = {
+            D0: 88,
+            dp: 50,
+            Rd: 10,
+            Rp: 8,
+            rVal: 1.2,
+            nVal: 0.22,
+            beta: 1.76,
+            ldr: 2.01,
+            isSafe: true,
+            isPlaying: false,
+            animProgress: 0, 
+            animId: null
+        };
+
+        // Explicitly sync state from all DOM sliders to avoid mapping errors
+        const syncStateFromInputs = () => {
+            state.D0 = Number(document.getElementById('inpD0').value);
+            state.dp = Number(document.getElementById('inpDp').value);
+            state.Rd = Number(document.getElementById('inpRd').value);
+            state.Rp = Number(document.getElementById('inpRp').value);
+            state.rVal = Number(document.getElementById('inpR').value);
+            state.nVal = Number(document.getElementById('inpN').value);
+
+            // Validation: Ensure physical logic (Punch smaller than Blank)
+            if (state.dp > state.D0 - 10) {
+                state.dp = state.D0 - 10;
+                document.getElementById('inpDp').value = state.dp;
+            }
+            if (state.D0 < state.dp + 10) {
+                state.D0 = state.dp + 10;
+                document.getElementById('inpD0').value = state.D0;
+            }
+
+            // Update UI Labels
+            document.getElementById('valD0').innerText = state.D0 + ' mm';
+            document.getElementById('valDp').innerText = state.dp + ' mm';
+            document.getElementById('valRd').innerText = state.Rd + ' mm';
+            document.getElementById('valRp').innerText = state.Rp + ' mm';
+            document.getElementById('valR').innerText = state.rVal.toFixed(2);
+            document.getElementById('valN').innerText = state.nVal.toFixed(2);
+        };
+
+        // Update Math Formulas
+        const updateCalculations = () => {
+            state.beta = state.D0 / state.dp;
+            
+            // Empirical LDR estimation
+            const baseLDR = 1.6;
+            const rFactor = 0.25 * state.rVal; 
+            const nFactor = 0.5 * state.nVal;
+            // Radii impact (larger radius gently increases formability)
+            const radiiFactor = ((state.Rd - 10) * 0.004) + ((state.Rp - 8) * 0.004); 
+            
+            state.ldr = baseLDR + rFactor + nFactor + radiiFactor;
+            state.isSafe = state.beta <= state.ldr;
+
+            document.getElementById('outBeta').innerText = state.beta.toFixed(2);
+            document.getElementById('outLDR').innerText = state.ldr.toFixed(2);
+
+            const badge = document.getElementById('statusBadgeContainer');
+            const betaEl = document.getElementById('outBeta');
+
+            if (state.isSafe) {
+                betaEl.className = "text-5xl font-mono text-[#4ade80] drop-shadow-md";
+                badge.innerHTML = `
+                    <div class="bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/30 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-3 shadow-[0_0_15px_rgba(74,222,128,0.15)]">
+                      <div class="w-2 h-2 rounded-full bg-[#4ade80] animate-pulse"></div> Safe (Stable Flow)
+                    </div>
+                `;
+            } else {
+                betaEl.className = "text-5xl font-mono text-red-500 drop-shadow-md";
+                badge.innerHTML = `
+                    <div class="bg-red-500/10 text-red-500 border border-red-500/30 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-3 shadow-[0_0_15px_rgba(239,68,68,0.15)]">
+                      <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div> Failure Risk
+                    </div>
+                `;
+            }
+        };
+
+        // Animation Engine
+        const toggleAnimation = () => {
+            if (state.isPlaying) return;
+            
+            const btn = document.getElementById('runBtn');
+
+            // If already at bottom, reset to top
+            if (state.animProgress >= 1) {
+                state.animProgress = 0;
+                renderSVG();
+                btn.innerHTML = `
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <span>Run Simulation</span>
+                `;
+                return;
+            }
+
+            // Start Animation
+            state.isPlaying = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.innerHTML = `<span>Animating...</span>`;
+            
+            let startTimestamp = null;
+            const duration = 1500; // 1.5 seconds to draw
+
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const rawProgress = (timestamp - startTimestamp) / duration;
+                
+                // Smooth ease-out animation
+                const easedProgress = 1 - Math.pow(1 - rawProgress, 4); 
+
+                if (rawProgress < 1) {
+                    state.animProgress = easedProgress;
+                    renderSVG();
+                    state.animId = requestAnimationFrame(step);
+                } else {
+                    state.animProgress = 1;
+                    renderSVG();
+                    state.isPlaying = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.innerHTML = `
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                        <span>Reset Tool</span>
+                    `;
+                }
+            };
+            state.animId = requestAnimationFrame(step);
+        };
+
+        // Render Graphics Engine
+        const renderSVG = () => {
+            const svgWidth = 800;
+            const svgHeight = 350;
+            const cx = svgWidth / 2;
+            const cy = 130; // Top die surface height
+            
+            const scale = 2.5; 
+            
+            // Scaled Geometry
+            const rp = (state.dp * scale) / 2;     
+            const r0 = (state.D0 * scale) / 2;     
+            const t = 6; // Sheet thickness (visual)               
+            const clearance = t + 2;           
+            
+            const Rd = state.Rd; 
+            const Rp = state.Rp; 
+            
+            const dieInnerR = rp + clearance;
+            const cxL = cx - dieInnerR; // Left die edge
+            const cxR = cx + dieInnerR; // Right die edge
+            const pxL = cx - rp;        // Left punch edge
+            const pxR = cx + rp;        // Right punch edge
+            
+            const maxDepth = 120;
+            const currentDepth = state.animProgress * maxDepth;
+            const punchBottomY = cy + currentDepth;
+            
+            // Constancy of volume (area) calculation for Flange radius shrinking
+            // Formula: rf = sqrt(r0^2 - 2 * rp * depth)
+            let currentFlangeR = Math.sqrt(Math.max(0, (r0*r0) - (2 * rp * currentDepth)));
+            const minFlangeR = dieInnerR + Rd + 5; 
+            if (isNaN(currentFlangeR) || currentFlangeR < minFlangeR) {
+                currentFlangeR = minFlangeR;
+            }
+
+            // Failure/Tearing logic
+            const tearDepthThreshold = maxDepth * 0.70;
+            const isTorn = !state.isSafe && currentDepth > tearDepthThreshold;
+            
+            const topDepth = isTorn ? tearDepthThreshold : currentDepth;
+            const fallOffset = isTorn ? (currentDepth - tearDepthThreshold) : 0;
+            
+            // Recalculate top flange if torn
+            let topFlangeR = Math.sqrt(Math.max(0, (r0*r0) - (2 * rp * topDepth)));
+            if (isNaN(topFlangeR) || topFlangeR < minFlangeR) topFlangeR = minFlangeR;
+
+            // --- BUILD PERFECT SHEET PATH ---
+            let path = "";
+
+            // 1. LEFT HALF
+            path += `M ${cx - topFlangeR}, ${cy - t/2} `; // Start at outer left flange
+            path += `L ${cxL - Rd}, ${cy - t/2} `;        // Draw to die corner
+            
+            if (topDepth <= 0) {
+                // Flat
+                path += `L ${cx}, ${cy - t/2} `;
+            } else if (topDepth < Rd + Rp) {
+                // Shallow draw (simplified curve)
+                path += `Q ${cxL + t/2}, ${cy + topDepth/2} ${pxL + Rp}, ${cy + topDepth + t/2} `;
+                path += `L ${cx}, ${cy + topDepth + t/2} `;
+            } else {
+                // Deep draw - Perfect Corner Arcs
+                // Left Die Corner (Convex). Center is (cxL, cy+Rd). Start is (cxL-Rd, cy-t/2). End is (cxL+t/2, cy+Rd).
+                // Sweeps down and right -> Clockwise -> Sweep Flag = 1
+                path += `A ${Rd + t/2},${Rd + t/2} 0 0,1 ${cxL + t/2}, ${cy + Rd} `;
+                
+                const wallBottomY = cy + topDepth - Rp;
+                
+                if (isTorn) {
+                    path += `L ${cxL + t/2}, ${wallBottomY - 10} `; // Tear abruptly
+                } else {
+                    path += `L ${cxL + t/2}, ${wallBottomY} `; // Full Wall
+                    // Left Punch Corner (Concave). Center is (pxL+Rp, wallBottom). End is (pxL+Rp, cy+topDepth+t/2).
+                    // Sweeps down and right -> Counter-Clockwise -> Sweep Flag = 0
+                    path += `A ${Rp + t/2},${Rp + t/2} 0 0,0 ${pxL + Rp}, ${cy + topDepth + t/2} `;
+                    path += `L ${cx}, ${cy + topDepth + t/2} `; // Bottom flat
+                }
+            }
+
+            // 2. RIGHT HALF
+            path += `M ${cx + topFlangeR}, ${cy - t/2} `; // Start at outer right flange
+            path += `L ${cxR + Rd}, ${cy - t/2} `;        // Draw to die corner
+            
+            if (topDepth <= 0) {
+                path += `L ${cx}, ${cy - t/2} `;
+            } else if (topDepth < Rd + Rp) {
+                path += `Q ${cxR - t/2}, ${cy + topDepth/2} ${pxR - Rp}, ${cy + topDepth + t/2} `;
+                path += `L ${cx}, ${cy + topDepth + t/2} `;
+            } else {
+                // Right Die Corner (Convex). Center is (cxR, cy+Rd). Start is (cxR+Rd, cy-t/2). End is (cxR-t/2, cy+Rd).
+                // Sweeps down and left -> Counter-Clockwise -> Sweep Flag = 0
+                path += `A ${Rd + t/2},${Rd + t/2} 0 0,0 ${cxR - t/2}, ${cy + Rd} `;
+                
+                const wallBottomY = cy + topDepth - Rp;
+                
+                if (isTorn) {
+                    path += `L ${cxR - t/2}, ${wallBottomY - 10} `;
+                } else {
+                    path += `L ${cxR - t/2}, ${wallBottomY} `;
+                    // Right Punch Corner (Concave). Sweeps down and left -> Clockwise -> Sweep Flag = 1
+                    path += `A ${Rp + t/2},${Rp + t/2} 0 0,1 ${pxR - Rp}, ${cy + topDepth + t/2} `;
+                    path += `L ${cx}, ${cy + topDepth + t/2} `;
+                }
+            }
+
+            // 3. FALLING TORN BOTTOM PIECE
+            let tornPath = "";
+            if (isTorn) {
+                const wallBottomY = cy + topDepth - Rp;
+                // Left fallen piece
+                tornPath += `M ${cxL + t/2}, ${wallBottomY - 10 + fallOffset} `;
+                tornPath += `L ${cxL + t/2}, ${wallBottomY + fallOffset} `;
+                tornPath += `A ${Rp + t/2},${Rp + t/2} 0 0,0 ${pxL + Rp}, ${cy + topDepth + t/2 + fallOffset} `;
+                tornPath += `L ${cx}, ${cy + topDepth + t/2 + fallOffset} `;
+                // Right fallen piece
+                tornPath += `M ${cxR - t/2}, ${wallBottomY - 10 + fallOffset} `;
+                tornPath += `L ${cxR - t/2}, ${wallBottomY + fallOffset} `;
+                tornPath += `A ${Rp + t/2},${Rp + t/2} 0 0,1 ${pxR - Rp}, ${cy + topDepth + t/2 + fallOffset} `;
+                tornPath += `L ${cx}, ${cy + topDepth + t/2 + fallOffset} `;
+            }
+
+            const sheetColor = state.isSafe ? '#4ade80' : '#ef4444';
+            
+            // Build Final SVG HTML
+            let html = `
+                <svg width="100%" height="100%" viewBox="0 0 ${svgWidth} ${svgHeight}">
+                    <defs>
+                        <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="8" height="8">
+                            <path d="M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4" stroke="#374151" stroke-width="1" />
+                        </pattern>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af" />
+                        </marker>
+                    </defs>
+
+                    <!-- Centerline -->
+                    <line x1="${cx}" y1="10" x2="${cx}" y2="${svgHeight - 10}" stroke="#4b5563" stroke-width="1" stroke-dasharray="15 10" opacity="0.5" />
+
+                    <!-- DIE -->
+                    <path d="M 0,${cy} L ${cxL - Rd},${cy} A ${Rd},${Rd} 0 0,1 ${cxL},${cy + Rd} L ${cxL},${svgHeight} L 0,${svgHeight} Z" fill="url(#diagonalHatch)" stroke="#4b5563" stroke-width="2" />
+                    <path d="M ${svgWidth},${cy} L ${cxR + Rd},${cy} A ${Rd},${Rd} 0 0,0 ${cxR},${cy + Rd} L ${cxR},${svgHeight} L ${svgWidth},${svgHeight} Z" fill="url(#diagonalHatch)" stroke="#4b5563" stroke-width="2" />
+                    <text x="40" y="${cy + 60}" fill="#9ca3af" font-size="12" font-family="monospace" letter-spacing="1">DIE</text>
+                    <text x="${svgWidth - 70}" y="${cy + 60}" fill="#9ca3af" font-size="12" font-family="monospace" letter-spacing="1">DIE</text>
+
+                    <!-- BLANK HOLDER -->
+                    <path d="M 0,30 L ${cxL - Rd - 10},30 L ${cxL - Rd - 10},${cy - t} L 0,${cy - t} Z" fill="#1e2326" stroke="#4b5563" stroke-width="2" />
+                    <path d="M ${svgWidth},30 L ${cxR + Rd + 10},30 L ${cxR + Rd + 10},${cy - t} L ${svgWidth},${cy - t} Z" fill="#1e2326" stroke="#4b5563" stroke-width="2" />
+                    <text x="40" y="60" fill="#9ca3af" font-size="12" font-family="monospace" letter-spacing="1">BLANK HOLDER</text>
+
+                    <!-- PUNCH -->
+                    <path d="M ${pxL},0 L ${pxL},${punchBottomY - Rp} A ${Rp},${Rp} 0 0,0 ${pxL + Rp},${punchBottomY} L ${pxR - Rp},${punchBottomY} A ${Rp},${Rp} 0 0,0 ${pxR},${punchBottomY - Rp} L ${pxR},0 Z" fill="#23292c" stroke="#4b5563" stroke-width="2" />
+                    <text x="${cx}" y="${punchBottomY - 30}" fill="#9ca3af" font-size="12" font-family="monospace" text-anchor="middle" letter-spacing="1">PUNCH</text>
+
+                    <!-- SHEET TOP SAFE/STUCK -->
+                    <path d="${path}" fill="none" stroke="${sheetColor}" stroke-width="${t}" stroke-linecap="butt" stroke-linejoin="round" />
+                    <text x="${cx - topFlangeR + 15}" y="${cy - t - 15}" fill="${sheetColor}" font-size="12" font-family="monospace" font-weight="bold">SHEET</text>
+            `;
+
+            if (isTorn) {
+                html += `
+                    <!-- SHEET BOTTOM FALLING -->
+                    <path d="${tornPath}" fill="none" stroke="${sheetColor}" stroke-width="${t}" stroke-linecap="butt" stroke-linejoin="round" />
+                    
+                    <!-- TEAR MARKERS -->
+                    <g class="animate-pulse">
+                        <circle cx="${cxL + t/2}" cy="${cy + topDepth - Rp - 5 + fallOffset}" r="12" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4 2" />
+                        <circle cx="${cxR - t/2}" cy="${cy + topDepth - Rp - 5 + fallOffset}" r="12" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4 2" />
+                        <text x="${cx}" y="${punchBottomY + 30}" fill="#ef4444" font-size="14" font-weight="bold" font-family="monospace" text-anchor="middle">TEARING (NECKING)</text>
+                    </g>
+                `;
+            }
+
+            html += `
+                    <!-- DIMENSIONS -->
+                    <line x1="${pxL}" y1="20" x2="${pxR}" y2="20" stroke="#9ca3af" stroke-width="1" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+                    <text x="${cx}" y="14" fill="#9ca3af" font-size="10" font-family="monospace" text-anchor="middle">dₚ = ${state.dp} mm</text>
+                    <line x1="${pxL}" y1="0" x2="${pxL}" y2="30" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2 2" />
+                    <line x1="${pxR}" y1="0" x2="${pxR}" y2="30" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2 2" />
+
+                    <!-- Always show D0 relative to top surface -->
+                    <line x1="${cx - r0}" y1="${cy - 45}" x2="${cx + r0}" y2="${cy - 45}" stroke="${sheetColor}" stroke-width="1" marker-start="url(#arrow)" marker-end="url(#arrow)" opacity="0.6"/>
+                    <text x="${cx}" y="${cy - 52}" fill="${sheetColor}" font-size="10" font-family="monospace" text-anchor="middle" opacity="0.8">Initial D₀ = ${state.D0} mm</text>
+                    <line x1="${cx - r0}" y1="${cy - 45}" x2="${cx - r0}" y2="${cy - 10}" stroke="${sheetColor}" stroke-width="1" stroke-dasharray="2 2" opacity="0.6"/>
+                    <line x1="${cx + r0}" y1="${cy - 45}" x2="${cx + r0}" y2="${cy - 10}" stroke="${sheetColor}" stroke-width="1" stroke-dasharray="2 2" opacity="0.6"/>
+                </svg>
+            `;
+
+            document.getElementById('svgContainer').innerHTML = html;
+        };
+
+        // Attach Listeners to ALL inputs
+        const init = () => {
+            const ids = ['inpD0', 'inpDp', 'inpRd', 'inpRp', 'inpR', 'inpN'];
+            ids.forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    syncStateFromInputs();
+                    updateCalculations();
+                    // If not animating, redraw instantly to reflect parameter changes
+                    if (!state.isPlaying && state.animProgress === 0) {
+                        renderSVG(); 
+                    }
+                });
+            });
+            
+            document.getElementById('runBtn').addEventListener('click', toggleAnimation);
+
+            // First load calculation and render
+            syncStateFromInputs();
+            updateCalculations();
+            renderSVG();
+        };
+
+        window.onload = init;
+    </script>
+</body>
+</html>
